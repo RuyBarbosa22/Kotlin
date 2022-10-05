@@ -1,6 +1,53 @@
-2022-10-04 12:23:25 jdbc[3]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CARROS" not found; SQL statement:
-
-            insert into Carros (modelo,ano,potencia) values
-            ('lamborghni', 2016, 1200.0)
-         [42102-214]
+2022-10-04 20:19:25 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Carro where ano >= 2019[*], order by potencia"; SQL statement:
+select * from Carro where ano >= 2019, order by potencia [42000-214]
+2022-10-04 20:22:25 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Schema "CARRO" not found; SQL statement:
+select * from Carro.ano > 2019 order by potencia [90079-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1833)
+	at org.h2.command.Parser.readTableReference(Parser.java:2334)
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2772)
+	at org.h2.command.Parser.parseSelect(Parser.java:2878)
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2762)
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2633)
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2612)
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2605)
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2598)
+	at org.h2.command.Parser.parseQuery(Parser.java:2567)
+	at org.h2.command.Parser.parsePrepared(Parser.java:724)
+	at org.h2.command.Parser.parse(Parser.java:689)
+	at org.h2.command.Parser.parse(Parser.java:661)
+	at org.h2.command.Parser.prepareCommand(Parser.java:569)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:631)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:554)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1116)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:92)
+	at org.apache.commons.dbcp2.DelegatingStatement.executeQuery(DelegatingStatement.java:329)
+	at org.apache.commons.dbcp2.DelegatingStatement.executeQuery(DelegatingStatement.java:329)
+	at org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:452)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:381)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:465)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:475)
+	at org.springframework.jdbc.core.JdbcTemplate.queryForObject(JdbcTemplate.java:508)
+	at repositorio.CarrosRepository.selectOrdenado(CarrosRepository.kt:40)
+	at app.AppCarrosKt.main(appCarros.kt:48)
+	at app.AppCarrosKt.main(appCarros.kt)
+2022-10-04 20:24:36 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Carro order by potencia [*]where ano > 2019"; SQL statement:
+select * from Carro order by potencia where ano > 2019 [42000-214]
+2022-10-04 20:25:20 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Carro order by potencia, [*]where ano > 2019"; expected "INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+select * from Carro order by potencia, where ano > 2019 [42001-214]
+2022-10-04 20:39:02 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Carro where ano >= 2019[*], order by potencia"; SQL statement:
+select * from Carro where ano >= 2019, order by potencia [42000-214]
+2022-10-04 20:39:29 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Carro where [*]order by potencia"; expected "INTERSECTS (, NOT, EXISTS, UNIQUE, INTERSECTS"; SQL statement:
+select * from Carro where order by potencia [42001-214]
+2022-10-04 20:44:16 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Carro order by potencia [*]where Carro.ano > 2019;"; SQL statement:
+select * from Carro order by potencia where Carro.ano > 2019; [42000-214]
