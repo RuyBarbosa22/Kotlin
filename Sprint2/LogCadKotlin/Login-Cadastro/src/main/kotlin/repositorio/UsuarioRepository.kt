@@ -9,18 +9,27 @@ class UsuarioRepository (val jdbcTemplate: JdbcTemplate) {
     fun cadastro(usuario: Usuario) {
         jdbcTemplate.update(
             """
-            insert into Carro (nome, email, tel, senha) values
+            insert into Usuario (nome, email, tel, senha) values
             (?,?,?,?)
         """, usuario.nome, usuario.email, usuario.tel, usuario.senha
         )
     }
 
-    fun entrar(): List<Usuario> {
-        return jdbcTemplate.query(
-            "select Usuario.nome, Usuario.email from Usuario;",
+    fun validacaoEmail(emailLog: String): Boolean {
+        val emailUsuario = jdbcTemplate.queryForObject(
+            "select * from Usuario where email = ?;",
             BeanPropertyRowMapper(Usuario::class.java)
         )
+        return emailUsuario != null
     }
 
+
+    fun validacaoSenha(senhaLog: String): Boolean {
+        val senhaUsuario = jdbcTemplate.queryForObject(
+            "select * from Usuario where senha = ?;",
+            BeanPropertyRowMapper(Usuario::class.java)
+        )
+        return senhaUsuario != null
+    }
 
 }
