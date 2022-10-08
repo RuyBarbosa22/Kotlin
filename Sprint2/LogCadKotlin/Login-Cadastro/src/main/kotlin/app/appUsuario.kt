@@ -15,13 +15,19 @@ fun main() {
     var cadastro = false
     var login = false
 
-        val resposta1 = showInputDialog("Bem vindo! Acesse sua conta, ou crie uma. \r\n 1 - Cadastro \r\n 2 - Entrar \r\n 3 - Sair").toInt()
+    var resposta1 =
+        showInputDialog("Bem vindo! Acesse sua conta, ou crie uma. \r\n 1 - Cadastro \r\n 2 - Entrar \r\n 3 - Sair").toInt()
+
+    while (resposta1 !=3){
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //CADASTRO
 
         if (resposta1 == 1) {
-
             while (!cadastro) {
                 while (true) {
-                    var nomeCad = showInputDialog("Nome de usuário").also { usuario1.nome = it }
+                    val nomeCad = showInputDialog("Nome de usuário").also { usuario1.nome = it }
                     if (nomeCad == "") {
                         showMessageDialog(null, "Usuário inválido!")
                     } else {
@@ -30,8 +36,10 @@ fun main() {
                 }
 
                 while (true) {
-                    var emailCad = showInputDialog("Email").also { usuario1.email = it }
+                    val emailCad = showInputDialog("Email").also { usuario1.email = it }
                     if (emailCad.indexOf("@") == -1) {
+                        showMessageDialog(null, "Email inválido")
+                    } else if (emailCad.indexOf(".com") == -1) {
                         showMessageDialog(null, "Email inválido")
                     } else {
                         break
@@ -39,19 +47,21 @@ fun main() {
                 }
 
                 while (true) {
-                    var telCad = showInputDialog("Telefone").also { usuario1.tel = it }
-                    if (telCad.length < 11 || telCad.length > 11) {
-                        showMessageDialog(null, "Número incorreto")
-                    } else if (!telCad.contains("-?[0-9]+(\\.[0-9]+)?")){
-                            showMessageDialog(null, "Número inválido! (apenas números)")
+                    val telCad = showInputDialog("Telefone").also { usuario1.tel = it }
+                    if (telCad.length < 11) {
+                        showMessageDialog(null, "Número incompleto")
+                    } else if (!usuarioRepository.isNumeric(telCad)) {
+                        showMessageDialog(null, "Apenas números")
+                    } else if (telCad.length > 11) {
+                        showMessageDialog(null, "Número grande demais!")
                     } else {
                         break
                     }
                 }
 
                 while (true) {
-                    var senhaCad = showInputDialog("Senha de acesso").also { usuario1.senha = it }
-                    var senha2Cad = showInputDialog("Confirme a senha")
+                    val senhaCad = showInputDialog("Senha de acesso").also { usuario1.senha = it }
+                    val senha2Cad = showInputDialog("Confirme a senha")
                     if (senhaCad != senha2Cad) {
                         showMessageDialog(null, "Senhas diferentes!")
                     } else {
@@ -63,23 +73,19 @@ fun main() {
                 }
                 cadastro = true
                 usuarioRepository.cadastro(usuario1)
-
+                resposta1 = 2
             }
-        }  else if (resposta1 == 2) {
+        } else if (resposta1 == 2) {
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //LOGIN
+
             while (login == false) {
-                while (true) {
-                    val emailLog = showInputDialog("Email")
-                    if (emailLog != usuario1.email){
-                        showMessageDialog(null, "Email inválido!")
-                    } else {
-                        break
-                    }
-                }
 
                 while (true) {
-                val emailLog = showInputDialog("Email:")
-                var r1 = usuarioRepository.validacaoEmail(emailLog)
-                    if (r1) {
+                    val emailLog = showInputDialog("Email:")
+                    val r1 = usuarioRepository.validacaoEmail(emailLog)
+                    if (!r1) {
                         break
                     } else {
                         showMessageDialog(null, "Email inválido!")
@@ -87,18 +93,22 @@ fun main() {
                 }
 
                 while (true) {
-                val senhaLog = showInputDialog("Senha de acesso:")
-                val r2 = usuarioRepository.validacaoSenha(senhaLog)
-                    if (r2) {
-                        break
+                    val senhaLog = showInputDialog("Senha de acesso:")
+                    val r2 = usuarioRepository.validacaoSenha(senhaLog)
+                    if (!r2) {
                         showMessageDialog(null, "Login realizado com sucesso")
-                        showMessageDialog(null,"Bem vindo de volta ${usuario1.nome}!")
+                        showMessageDialog(null, "Bem vindo de volta ${usuario1.nome}!")
+                        break
                     }
                 }
                 login = true
-                }
+            }
 
-            } else {
+        } else {
             showMessageDialog(null, "Saindo...")
         }
-        }
+
+    }
+
+}
+

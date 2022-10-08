@@ -1,0 +1,88 @@
+2022-10-07 18:06:41 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+
+            insert into Usuario (nome, email, tel, senha) values
+            (?,?,?,?)
+         [42104-214]
+2022-10-07 18:40:03 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+
+            insert into Usuario (nome, email, tel, senha) values
+            (?,?,?,?)
+         [42104-214]
+2022-10-07 18:40:26 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000a        create table Usuario (\000a        id int primary key auto_increment,\000a        nome varchar (30) not null,\000a        email varchar (30) not null unique,\000a        tel varchar (11) not null unique,\000a        senha varchar (20) not null\000a        )[*]auto_increment=1;\000a    "; SQL statement:
+
+        create table Usuario (
+        id int primary key auto_increment,
+        nome varchar (30) not null,
+        email varchar (30) not null unique,
+        tel varchar (11) not null unique,
+        senha varchar (20) not null
+        )auto_increment=1;
+     [42000-214]
+2022-10-07 19:21:01 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Parameter "#1" is not set; SQL statement:
+select * from Usuario where email = ? [90012-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:646)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.Parameter.checkSet(Parameter.java:75)
+	at org.h2.command.Prepared.checkParameters(Prepared.java:207)
+	at org.h2.command.CommandContainer.query(CommandContainer.java:250)
+	at org.h2.command.Command.executeQuery(Command.java:190)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:99)
+	at org.apache.commons.dbcp2.DelegatingStatement.executeQuery(DelegatingStatement.java:329)
+	at org.apache.commons.dbcp2.DelegatingStatement.executeQuery(DelegatingStatement.java:329)
+	at org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:452)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:381)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:465)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:475)
+	at org.springframework.jdbc.core.JdbcTemplate.queryForObject(JdbcTemplate.java:508)
+	at repositorio.UsuarioRepository.validacaoEmail(UsuarioRepository.kt:24)
+	at app.AppUsuarioKt.main(appUsuario.kt:91)
+	at app.AppUsuarioKt.main(appUsuario.kt)
+2022-10-07 19:26:56 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Parameter "#1" is not set; SQL statement:
+select * from Usuario where email = ? [90012-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:646)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.Parameter.checkSet(Parameter.java:75)
+	at org.h2.command.Prepared.checkParameters(Prepared.java:207)
+	at org.h2.command.CommandContainer.query(CommandContainer.java:250)
+	at org.h2.command.Command.executeQuery(Command.java:190)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:99)
+	at org.apache.commons.dbcp2.DelegatingStatement.executeQuery(DelegatingStatement.java:329)
+	at org.apache.commons.dbcp2.DelegatingStatement.executeQuery(DelegatingStatement.java:329)
+	at org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:452)
+	at org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:381)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:465)
+	at org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:475)
+	at org.springframework.jdbc.core.JdbcTemplate.queryForObject(JdbcTemplate.java:508)
+	at repositorio.UsuarioRepository.validacaoEmail(UsuarioRepository.kt:24)
+	at app.AppUsuarioKt.main(appUsuario.kt:87)
+	at app.AppUsuarioKt.main(appUsuario.kt)
+2022-10-07 19:49:51 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Usuario where email like [*]= ?"; SQL statement:
+select * from Usuario where email like = ? [42000-214]
+2022-10-07 19:58:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Usuario where email like [*]= ?"; SQL statement:
+select * from Usuario where email like = ? [42000-214]
+2022-10-07 19:59:10 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Usuario where email like [*]= ?"; SQL statement:
+select * from Usuario where email like = ? [42000-214]
+2022-10-07 20:00:10 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select Usuario.email from Usuario where email like [*]= ?"; SQL statement:
+select Usuario.email from Usuario where email like = ? [42000-214]
+2022-10-07 20:22:26 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select Usuario.email from Usuario where email like [*]= ?"; SQL statement:
+select Usuario.email from Usuario where email like = ? [42000-214]
+2022-10-07 20:23:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Usuario where email like [*]= ?"; SQL statement:
+select * from Usuario where email like = ? [42000-214]
+2022-10-07 20:30:08 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from Usuario where email like [*]= ?"; SQL statement:
+select * from Usuario where email like = ? [42000-214]

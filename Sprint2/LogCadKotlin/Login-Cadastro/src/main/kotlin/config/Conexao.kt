@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate
 class Conexao {
     val driverClassName = "org.h2.Driver"
     val url = "jdbc:h2:./banco-Log-Cad"
-    val username = "grupo5"
-    val password = "GHR2022"
+    val username = "sa"
+    val password = ""
 
     fun getJdbcTemplate():JdbcTemplate {
         val dataSource = BasicDataSource()

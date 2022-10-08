@@ -15,21 +15,28 @@ class UsuarioRepository (val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun validacaoEmail(emailLog: String): Boolean {
-        val emailUsuario = jdbcTemplate.queryForObject(
-            "select * from Usuario where email = ?;",
-            BeanPropertyRowMapper(Usuario::class.java)
-        )
-        return emailUsuario != null
+    fun isNumeric(telCad: String): Boolean {
+        val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
+        return telCad.matches(regex)
     }
 
-
-    fun validacaoSenha(senhaLog: String): Boolean {
-        val senhaUsuario = jdbcTemplate.queryForObject(
-            "select * from Usuario where senha = ?;",
-            BeanPropertyRowMapper(Usuario::class.java)
+    fun validacaoEmail(emailLog:String): Boolean {
+        val selectEmail = jdbcTemplate.queryForObject(
+            "select * from Usuario where email like = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Usuario::class.java), "%$emailLog%"
         )
-        return senhaUsuario != null
+        println(selectEmail)
+        return selectEmail != null
+    }
+
+    fun validacaoSenha(senhaLog:String): Boolean {
+        val selectSenha = jdbcTemplate.queryForObject(
+            "select * from Usuario where senha like = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Usuario::class.java), "%$senhaLog%"
+        )
+        println(selectSenha)
+        return selectSenha != null
     }
 
 }
+
