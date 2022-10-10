@@ -9,8 +9,8 @@ fun main() {
         create table Usuario (
         id int primary key auto_increment,
         nome varchar (30) not null,
-        email varchar (30) not null unique,
-        tel varchar (11) not null unique,
+        email varchar (30) not null,
+        tel varchar (11) not null,
         senha varchar (20) not null
         );
     """)

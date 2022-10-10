@@ -73,6 +73,7 @@ fun main() {
                 }
                 cadastro = true
                 usuarioRepository.cadastro(usuario1)
+                println(usuarioRepository.cadastro(usuario1))
                 resposta1 = 2
             }
         } else if (resposta1 == 2) {
@@ -85,7 +86,7 @@ fun main() {
                 while (true) {
                     val emailLog = showInputDialog("Email:")
                     val r1 = usuarioRepository.validacaoEmail(emailLog)
-                    if (!r1) {
+                    if (r1) {
                         break
                     } else {
                         showMessageDialog(null, "Email inválido!")
@@ -95,7 +96,7 @@ fun main() {
                 while (true) {
                     val senhaLog = showInputDialog("Senha de acesso:")
                     val r2 = usuarioRepository.validacaoSenha(senhaLog)
-                    if (!r2) {
+                    if (r2) {
                         showMessageDialog(null, "Login realizado com sucesso")
                         showMessageDialog(null, "Bem vindo de volta ${usuario1.nome}!")
                         break
