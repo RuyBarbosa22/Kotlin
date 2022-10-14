@@ -1,0 +1,3 @@
+2022-10-13 21:30:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+select * from Usuario where email like ? [42104-214]
