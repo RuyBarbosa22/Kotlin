@@ -3,16 +3,20 @@ fun main() {
 
     val jdbcTemplate = Conexao().getJdbcTemplate()
 
-    //Criando banco e tabela de Usuário
-
     jdbcTemplate.execute("""
+        
+        drop table Usuario;
+        
         create table Usuario (
         id int primary key auto_increment,
-        nome varchar (30) not null,
-        email varchar (30) not null unique,
-        tel varchar (11) not null,
-        senha varchar (20) not null
+        nome varchar (30),
+        email varchar (30),
+        tel varchar (11),
+        senha varchar (20) 
         );
+        
+        insert into Usuario (nome, email, tel, senha) values
+        ('Ruy', 'ruy@gmail.com', '11946706513', '123');
     """)
 
 }

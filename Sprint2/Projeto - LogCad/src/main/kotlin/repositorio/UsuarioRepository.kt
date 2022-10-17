@@ -6,19 +6,13 @@ import org.springframework.jdbc.core.JdbcTemplate
 
 class UsuarioRepository(val jdbcTemplate: JdbcTemplate) {
 
-    fun cadastro(usuario: Usuario): String{
+    fun cadastro(usuario: Usuario){
         jdbcTemplate.update(
             """
             insert into Usuario (nome, email, tel, senha) values
             (?,?,?,?)
         """, usuario.nome, usuario.email, usuario.tel, usuario.senha
         )
-        return cadastro(usuario)
-    }
-
-    fun isNumeric(telCad: String): Boolean {
-        val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
-        return telCad.matches(regex)
     }
 
     fun validacaoEmail(emailLog: String): Boolean {
@@ -35,6 +29,12 @@ class UsuarioRepository(val jdbcTemplate: JdbcTemplate) {
             BeanPropertyRowMapper(Usuario::class.java), senhaLog
         )
         return selectSenha != null
+    }
+
+
+    fun isNumeric(telCad: String): Boolean {
+        val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
+        return telCad.matches(regex)
     }
 
 }
