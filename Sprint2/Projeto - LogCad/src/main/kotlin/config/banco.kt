@@ -5,9 +5,7 @@ fun main() {
 
     jdbcTemplate.execute("""
         
-        drop table Usuario;
-        
-        create table Usuario (
+        create table if not exists Usuario (
         id int primary key auto_increment,
         nome varchar (30),
         email varchar (30),
