@@ -1,0 +1,11 @@
+2022-10-17 19:23:17 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found; SQL statement:
+
+        
+        drop table Usuario [42102-214]
+2022-10-17 19:24:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USUARIO" not found (this database is empty); SQL statement:
+
+            insert into Usuario (nome, email, tel, senha) values
+            (?,?,?,?)
+         [42104-214]
