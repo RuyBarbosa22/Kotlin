@@ -2,10 +2,9 @@ package app
 
 import com.github.britooo.looca.api.core.Looca
 import config.Conexao
-import dominio.Usuario
-import repositorio.UsuarioRepository
+import dominio.Empresa
+import repositorio.EmpresaRepository
 import javax.swing.JOptionPane.*
-import kotlin.math.roundToInt
 
 open class Main {
     companion object {
@@ -16,7 +15,7 @@ open class Main {
 
                 val escolha = showInputDialog(
                     """
-                        Bem vindo
+                        Seja bem vindo de volta! Oque deseja fazer?
                         1 - Cadastrar
                         2 - Login
                         3 - Sair
@@ -31,23 +30,26 @@ open class Main {
             }
         }
 
+
         fun cadastro() {
 
+            val length = 5
+            val randomString = getRandomString(length)
             val jdbcTemplate = Conexao().getJdbcTemplate()
-            val usuario = Usuario()
-            val usuarioRepository = UsuarioRepository(jdbcTemplate)
+            val empresa = Empresa()
+            val empresaRepository = EmpresaRepository(jdbcTemplate)
 
             while (true) {
-                val nomeCad = showInputDialog("Nome de usuário").also { usuario.nome = it }
+                val nomeCad = showInputDialog("Nome da empresa").also { empresa.nome = it }.lowercase()
                 if (nomeCad == "") {
-                    showMessageDialog(null, "Usuário inválido!")
+                    showMessageDialog(null, "É necessário inserir um nome!")
                 } else {
                     break
                 }
             }
 
             while (true) {
-                val emailCad = showInputDialog("Email").also { usuario.email = it }.lowercase()
+                val emailCad = showInputDialog("Email").also { empresa.email = it }.lowercase()
                 if (emailCad.indexOf("@") == -1) {
                     showMessageDialog(null, "Email inválido")
                 } else if (emailCad.indexOf(".com") == -1) {
@@ -57,11 +59,47 @@ open class Main {
                 }
             }
 
+
             while (true) {
-                val telCad = showInputDialog("Telefone").also { usuario.tel = it }
+                val cnpjCad = showInputDialog("CNPJ").also { empresa.cnpj = it }
+                if (cnpjCad.length < 14) {
+                    showMessageDialog(null, "Número incompleto")
+                } else if (!empresaRepository.isNumeric(cnpjCad)) {
+                    showMessageDialog(null, "Apenas números")
+                } else if (cnpjCad.length > 14) {
+                    showMessageDialog(null, "Muito grande! Digite apenas números.")
+                } else {
+                    break
+                }
+            }
+
+            while (true) {
+                val cepCad = showInputDialog("CEP").also { empresa.cep = it }
+                if (cepCad.length < 8) {
+                    showMessageDialog(null, "Número incompleto")
+                } else if (!empresaRepository.isNumeric(cepCad)) {
+                    showMessageDialog(null, "Apenas números")
+                } else if (cepCad.length > 8) {
+                    showMessageDialog(null, "Número grande demais!")
+                } else {
+                    break
+                }
+            }
+
+            while (true) {
+                val estadoCad = showInputDialog("Estado(UF)").also { empresa.estado = it }.lowercase()
+                if (estadoCad == "") {
+                    showMessageDialog(null, "É necessário inserir o estado!")
+                } else {
+                    break
+                }
+            }
+
+            while (true) {
+                val telCad = showInputDialog("Telefone").also { empresa.numero = it }
                 if (telCad.length < 11) {
                     showMessageDialog(null, "Número incompleto")
-                } else if (!usuarioRepository.isNumeric(telCad)) {
+                } else if (!empresaRepository.isNumeric(telCad)) {
                     showMessageDialog(null, "Apenas números")
                 } else if (telCad.length > 11) {
                     showMessageDialog(null, "Número grande demais!")
@@ -76,8 +114,14 @@ open class Main {
                 if (senhaCad != senha2Cad) {
                     showMessageDialog(null, "Senhas diferentes!")
                 } else {
-                    usuario.senha = senhaCad
-                    UsuarioRepository(jdbcTemplate).cadastro(usuario)
+                    empresa.senha = senhaCad
+                    empresa.codEmpresa = randomString
+                    showMessageDialog(null,"""
+                        Cadastro realizado com sucesso!
+                        Esse é seu código empresarial: ${randomString}
+                        Guarde-o pois é necessário para demais funcionalidades
+                    """.trimIndent())
+                    EmpresaRepository(jdbcTemplate).cadastro(empresa)
                     showMessageDialog(null, "Cadastro realizado com sucesso!")
                     showMessageDialog(null, "Redirecionando...")
                     break
@@ -89,16 +133,16 @@ open class Main {
         fun login() {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
-            val usuario = Usuario()
-            val usuarioRepository = UsuarioRepository(jdbcTemplate)
+            val empresa = Empresa()
+            val empresaRepository = EmpresaRepository(jdbcTemplate)
 
             while (true) {
-                val emailLog = showInputDialog("Email:")
+                val emailLog = showInputDialog("Email:").lowercase()
                 val senhaLog = showInputDialog("Senha de acesso:")
-                val autenticado = usuarioRepository.validacaoLogin(emailLog, senhaLog)
+                val autenticado = empresaRepository.validacaoLogin(emailLog, senhaLog)
                 if (autenticado) {
                     showMessageDialog(null, "Login realizado com sucesso")
-                    showMessageDialog(null, "Bem vindo de volta ${usuario.nome}!")
+                    showMessageDialog(null, "Bem vindo de volta ${empresa.nome}!")
 
                     while (true) {
                         val resp = showInputDialog(
@@ -127,6 +171,13 @@ open class Main {
                 }
             }
         }
+
+            fun getRandomString(length: Int) : String {
+                val charset = "0123456789"
+                return (1..length)
+                    .map { charset.random() }
+                    .joinToString("")
+            }
 
         fun monitorarCPU() {
             val looca = Looca()
