@@ -4,11 +4,20 @@ import com.github.britooo.looca.api.core.Looca
 import com.microsoft.sqlserver.jdbc.StringUtils.isNumeric
 import config.Conexao
 import dominio.Empresa
+import dominio.componentes.CPU
+import dominio.componentes.Disco
+import dominio.componentes.Maquina
+import dominio.componentes.RAM
 import repositorio.EmpresaRepository
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
-import javax.swing.JOptionPane.*
+import javax.swing.JOptionPane.showInputDialog
+import javax.swing.JOptionPane.showMessageDialog
 import kotlin.concurrent.schedule
+import kotlin.math.round
 
+@Suppress("UNREACHABLE_CODE")
 open class Main {
     companion object {
         @JvmStatic
@@ -162,8 +171,8 @@ open class Main {
 
                         when (resp) {
                             "1" -> monitorar()
-                           // "2" -> monitorarRAM()
-                           // "3" -> monitorarHD()
+                            // "2" -> monitorarRAM()
+                            // "3" -> monitorarHD()
                             else -> return
                         }
                     }
@@ -222,84 +231,59 @@ open class Main {
                     if (resp == "segundos") {
                         resp2 = resp2 * 1000
                     } else if (resp == "minutos") {
-                        resp2 = (resp2 * 60) *1000
+                        resp2 = (resp2 * 60) * 1000
                     } else if (!isNumeric(resp2.toString())) {
                         showMessageDialog(null, "Valor inválido!")
                     } else {
-                        resp2 = ((resp2 * 60) *60) * 1000
+                        resp2 = ((resp2 * 60) * 60) * 1000
                     }
                 }
 
 
                 Timer().schedule(resp2) {
-
+                    monitorarComponentes()
                 }
             }
 
         }
 
+        fun monitorarComponentes() {
 
-        fun monitorarCPU() {
+            // Variaveis para inserção de data/hora
+            val agora = LocalDateTime.now()
+            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+            val agoraBonito = agora.format(formatoDH)
+
+            // CPU
             val looca = Looca()
-            val processador = looca.processador
+            val loocaCPU = looca.processador
+            val cpu = CPU()
+            cpu.freqUsoCpu = loocaCPU.frequencia.toDouble() / 1024 / 1024 / 1024
+            cpu.pctUsoCpu = loocaCPU.uso
 
-            showMessageDialog(
-                null, """
-        Fabricante: ${processador.fabricante})
-        Modelo: ${processador.nome}
-        Frequência (GHz): ${processador.frequencia.toDouble() / 1024 / 1024 / 1024}
-        Uso (%): ${processador.uso}
-    """
-            )
+            // DISCO
+            val loocaDisco = looca.grupoDeDiscos
+            val disco = Disco()
+            disco.qtdDisco = loocaDisco.quantidadeDeDiscos
+            disco.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+
+            // RAM
+            val loocaRam = looca.memoria
+            val ram = RAM()
+            ram.usadoRam = loocaRam.emUso.toDouble() / 1024 / 1024 / 1024
+            ram.livreRam = loocaRam.total - loocaRam.emUso.toDouble() / 1024 / 1024 / 1024
+            ram.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
+
+            // MÁQUINA
+            val loocaPc = looca.sistema
+            val maquina = Maquina()
+            maquina.SO = loocaPc.sistemaOperacional
+            maquina.nucleoF = loocaCPU.numeroCpusFisicas
+            maquina.nucleoL = loocaCPU.numeroCpusLogicas
+            maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+            maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
+
         }
-//
-//        fun monitorarRAM() {
-//            val looca = Looca()
-//
-//            val memoria = looca.memoria
-//
-//            showMessageDialog(
-//                null, """
-//        Total (GB): ${"%.2f".format(memoria.total.toDouble() / 1024 / 1024 / 1024)}
-//        Em uso (GB): ${"%.2f".format(memoria.emUso.toDouble() / 1024 / 1024 / 1024)}
-//        Disponível (GB): ${"%.2f".format(memoria.disponivel.toDouble() / 1024 / 1024 / 1024)}
-//    """
-//            )
-//        }
-//
-//        fun monitorarHD() {
-//            val looca = Looca()
-//
-//            val grupoDiscos = looca.grupoDeDiscos
-//
-//            val discos = grupoDiscos.discos
-//            discos.forEachIndexed { d, disco ->
-//                showMessageDialog(
-//                    null, """
-//            Disco ${d + 1}:
-//            Modelo: ${disco.modelo}
-//            Tamanho (GB): ${disco.tamanho.toDouble() / 1024 / 1024 / 1024}
-//        """
-//                )
-//            }
-//        }
-//
-//        fun monitorarPC() {
-//            val looca = Looca()
-//            val sistema = looca.sistema
-//
-//            showMessageDialog(
-//                null, """
-//        Fabricante: """ + sistema.fabricante + """
-//        Arquitetura: """ + sistema.arquitetura + """
-//        SO: """ + sistema.sistemaOperacional + """
-//        Ligado há: """ + sistema.tempoDeAtividade + """ horas
-//        Ligado desde: """ + sistema.inicializado + """
-//    """
-//            )
-//        }
-
-
     }
 }
 
