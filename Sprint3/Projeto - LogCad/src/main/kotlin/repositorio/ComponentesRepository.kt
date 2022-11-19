@@ -13,36 +13,36 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
     fun inserirCpu(cpu: CPU){
         jdbcTemplate.update(
             """
-            insert into cpu_dinamica_kotlin (pct_uso, freq_uso, dataHora) values
+            insert into dbo.cpu_dinamica_kotlin (pct_uso, freq_uso, fk_computador_kotlin) values
             (?,?,?)
-        """, cpu.pctUsoCpu, cpu.freqUsoCpu, cpu.dataHora
+        """, cpu.pctUsoCpu, cpu.freqUsoCpu, 201
         )
     }
 
     fun inserirRam(ram: RAM){
         jdbcTemplate.update(
             """
-            insert into memoria_dinamica_kotlin (mem_total, mem_usando, mem_livre, dataHora) values
+            insert into dbo.memoria_dinamica_kotlin (mem_total, mem_usando, mem_livre, fk_computador_kotlin) values
             (?,?,?,?)
-        """, ram.totalRam, ram.usadoRam, ram.livreRam, ram.dataHora
+        """, ram.totalRam, ram.usadoRam, ram.livreRam, 201
         )
     }
 
     fun inserirDisco(disco: Disco){
         jdbcTemplate.update(
             """
-            insert into disco_dinamico_kotlin (total, qtdDisco, dataHora) values
+            insert into dbo.disco_dinamico_kotlin (total, qtdDisco, fk_computador_kotlin) values
             (?,?,?)
-        """, disco.totalDisco, disco.qtdDisco, disco.dataHora
+        """, disco.totalDisco, disco.qtdDisco, 201
         )
     }
 
     fun inserirMaquina(maquina: Maquina){
         jdbcTemplate.update(
             """
-            insert into computador_kotlin (sistema_operacional, disco_total, cpu_nucleos_logicos, cpu_nucleos_fisicos, memoria_total) values
-            (?,?,?,?,?)
-        """, maquina.SO, maquina.totalDisco, maquina.nucleoL, maquina.nucleoF, maquina.totalRam
+            insert into dbo.computador_kotlin (sistema_operacional, disco_total, cpu_nucleos_logicos, cpu_nucleos_fisicos, memoria_total, fk_empresa) values
+            (?,?,?,?,?,?)
+        """, maquina.SO, maquina.totalDisco, maquina.nucleoL, maquina.nucleoF, maquina.totalRam, 1
         )
     }
     }

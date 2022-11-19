@@ -8,16 +8,16 @@ import dominio.componentes.CPU
 import dominio.componentes.Disco
 import dominio.componentes.Maquina
 import dominio.componentes.RAM
+import repositorio.ComponentesRepository
 import repositorio.EmpresaRepository
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.swing.JOptionPane.showInputDialog
 import javax.swing.JOptionPane.showMessageDialog
 import kotlin.concurrent.schedule
-import kotlin.math.round
 
-@Suppress("UNREACHABLE_CODE")
 open class Main {
     companion object {
         @JvmStatic
@@ -131,7 +131,7 @@ open class Main {
                     showMessageDialog(
                         null, """
                         Cadastro realizado com sucesso!
-                        Esse é seu código empresarial: ${randomString}
+                        Esse é seu código empresarial: $randomString
                         Guarde-o pois é necessário para demais funcionalidades
                     """.trimIndent()
                     )
@@ -193,79 +193,123 @@ open class Main {
 
         fun monitorar() {
 
-            while (true) {
-                var resp = showInputDialog(
-                    """
+            var resp = showInputDialog(
+                """
                 Unidade de medida de tempo:
                 1 - segundos
                 2 - minutos
                 3 - horas
             """.trimIndent()
-                )
+            )
 
-                while (true) {
-                    if (resp == "1") {
-                        resp = "segundos"
-                        break
-                    } else if (resp == "2") {
-                        resp = "minutos"
-                        break
-                    } else if (resp == "3") {
-                        resp = "horas"
-                        break
-                    } else {
-                        showMessageDialog(null, "Opção inválida!")
-                    }
-                }
-
-
-                var resp2 = showInputDialog(
-                    """
-                        De quanto em quanto ${resp} você deseja gravar
-                        os dados das máquinas?
-                    """.trimIndent()
-                ).toLong()
-
-
-                while (true) {
-                    if (resp == "segundos") {
-                        resp2 = resp2 * 1000
-                    } else if (resp == "minutos") {
-                        resp2 = (resp2 * 60) * 1000
-                    } else if (!isNumeric(resp2.toString())) {
-                        showMessageDialog(null, "Valor inválido!")
-                    } else {
-                        resp2 = ((resp2 * 60) * 60) * 1000
-                    }
-                }
-
-
-                Timer().schedule(resp2) {
-                    monitorarComponentes()
+            while (true) {
+                if (resp == "1") {
+                    resp = "segundos"
+                    break
+                } else if (resp == "2") {
+                    resp = "minutos"
+                    break
+                } else if (resp == "3") {
+                    resp = "horas"
+                    break
+                } else {
+                    showMessageDialog(null, "Opção inválida!")
                 }
             }
+
+            var resp2 = showInputDialog(
+                """
+                        De quantos em quantos $resp você deseja gravar
+                        os dados das máquinas?
+                    """.trimIndent()
+            ).toLong()
+
+            while (true) {
+                if (resp == "segundos") {
+                    resp2 *= 1000
+                    break
+                } else if (resp == "minutos") {
+                    resp2 = (resp2 * 60) * 1000
+                    break
+                } else if (!isNumeric(resp2.toString())) {
+                    showMessageDialog(null, "Valor inválido!")
+                } else {
+                    resp2 = ((resp2 * 60) * 60) * 1000
+                    break
+                }
+            }
+
+            fun monitorar(repeticao : Int, realizados: Int) {
+                if (realizados < repeticao) {
+                    monitorarComponentes()
+                    Timer().schedule(resp2) {
+                        monitorar(repeticao, realizados+1)
+                    }
+                }
+            }
+
+            monitorar(5,0)
 
         }
 
         fun monitorarComponentes() {
+            disco()
+            cpu()
+            ram()
+        }
+
+        fun disco() {
+
+            //imports de classe e jdbc
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val componentes = ComponentesRepository(jdbcTemplate)
 
             // Variaveis para inserção de data/hora
             val agora = LocalDateTime.now()
             val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
             val agoraBonito = agora.format(formatoDH)
 
-            // CPU
             val looca = Looca()
-            val loocaCPU = looca.processador
-            val cpu = CPU()
-            cpu.freqUsoCpu = loocaCPU.frequencia.toDouble() / 1024 / 1024 / 1024
-            cpu.pctUsoCpu = loocaCPU.uso
 
             // DISCO
             val loocaDisco = looca.grupoDeDiscos
             val disco = Disco()
             disco.qtdDisco = loocaDisco.quantidadeDeDiscos
             disco.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+            componentes.inserirDisco(disco)
+        }
+        fun cpu() {
+
+            //imports de classe e jdbc
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val componentes = ComponentesRepository(jdbcTemplate)
+
+            // Variaveis para inserção de data/hora
+            val agora = LocalDateTime.now()
+            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+            val agoraBonito = agora.format(formatoDH)
+
+            val looca = Looca()
+
+            // CPU
+            val loocaCPU = looca.processador
+            val cpu = CPU()
+            cpu.freqUsoCpu = loocaCPU.frequencia.toDouble() / 1024 / 1024 / 1024
+            cpu.pctUsoCpu = loocaCPU.uso
+            componentes.inserirCpu(cpu)
+        }
+        fun ram() {
+
+            //imports de classe e jdbc
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val componentes = ComponentesRepository(jdbcTemplate)
+
+            // Variaveis para inserção de data/hora
+            val agora = LocalDateTime.now()
+            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+            val agoraBonito = agora.format(formatoDH)
+
+            val looca = Looca()
 
             // RAM
             val loocaRam = looca.memoria
@@ -273,16 +317,34 @@ open class Main {
             ram.usadoRam = loocaRam.emUso.toDouble() / 1024 / 1024 / 1024
             ram.livreRam = loocaRam.total - loocaRam.emUso.toDouble() / 1024 / 1024 / 1024
             ram.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
+            componentes.inserirRam(ram)
+        }
+        fun maquina() {
+
+            //imports de classe e jdbc
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val componentes = ComponentesRepository(jdbcTemplate)
+
+            // Variaveis para inserção de data/hora
+            val agora = LocalDateTime.now()
+            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+            val agoraBonito = agora.format(formatoDH)
+
+            val looca = Looca()
+            val loocaRam = looca.memoria
+            val loocaCPU = looca.processador
+            val loocaDisco = looca.grupoDeDiscos
 
             // MÁQUINA
             val loocaPc = looca.sistema
             val maquina = Maquina()
             maquina.SO = loocaPc.sistemaOperacional
+
             maquina.nucleoF = loocaCPU.numeroCpusFisicas
             maquina.nucleoL = loocaCPU.numeroCpusLogicas
             maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
             maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
-
+            componentes.inserirMaquina(maquina)
         }
     }
 }

@@ -4,8 +4,8 @@ import java.time.LocalDateTime
 
 data class Disco (
     var totalDisco: Double,
-    var qtdDisco: Int,
-    var dataHora: LocalDateTime
+    var qtdDisco: Int
+
         ) {
-    constructor(): this (0.0,0, LocalDateTime.now())
+    constructor(): this (0.0,0)
 }

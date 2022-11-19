@@ -7,8 +7,8 @@ data class Maquina (
     var totalDisco: Double,
     var nucleoL: Int,
     var nucleoF: Int,
-    var totalRam: Double,
-    var dataHora: LocalDateTime
+    var totalRam: Double
+
         ) {
-    constructor(): this ("", 0.0, 0,0,0.0, LocalDateTime.now())
+    constructor(): this ("", 0.0, 0,0,0.0)
 }
