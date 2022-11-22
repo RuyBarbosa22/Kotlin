@@ -13,17 +13,17 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
     fun inserirCpu(cpu: CPU){
         jdbcTemplate.update(
             """
-            insert into dbo.cpu_dinamica_kotlin (pct_uso, freq_uso, fk_computador_kotlin) values
-            (?,?,?)
-        """, cpu.pctUsoCpu, cpu.freqUsoCpu, 201
+            insert into dbo.cpu_dinamica_kotlin (pct_uso, freq_uso, dataHora, fk_computador_kotlin) values
+            (?,?,?,?)
+        """, cpu.pctUsoCpu, cpu.freqUsoCpu, cpu.dataHora, 201
         )
     }
 
     fun inserirRam(ram: RAM){
         jdbcTemplate.update(
             """
-            insert into dbo.memoria_dinamica_kotlin (mem_total, mem_usando, mem_livre, fk_computador_kotlin) values
-            (?,?,?,?)
+            insert into dbo.memoria_dinamica_kotlin (mem_total, mem_usando, mem_livre, dataHora, fk_computador_kotlin) values
+            (?,?,?,?,?)
         """, ram.totalRam, ram.usadoRam, ram.livreRam, 201
         )
     }
@@ -31,8 +31,8 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
     fun inserirDisco(disco: Disco){
         jdbcTemplate.update(
             """
-            insert into dbo.disco_dinamico_kotlin (total, qtdDisco, fk_computador_kotlin) values
-            (?,?,?)
+            insert into dbo.disco_dinamico_kotlin (total, qtdDisco, dataHora, fk_computador_kotlin) values
+            (?,?,?,?)
         """, disco.totalDisco, disco.qtdDisco, 201
         )
     }

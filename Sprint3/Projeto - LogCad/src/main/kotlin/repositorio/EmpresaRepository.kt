@@ -30,6 +30,14 @@ class EmpresaRepository(val jdbcTemplate: JdbcTemplate) {
         return telCad.matches(regex)
     }
 
+
+    fun validaFk (codEmpresaCad: String): Empresa? {
+        val valida = jdbcTemplate.queryForObject(
+            "select * from empresa where codEmpresa = ?",
+            BeanPropertyRowMapper(Empresa::class.java), codEmpresaCad
+        )
+        return valida
+    }
 }
 
 

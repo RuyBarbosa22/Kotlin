@@ -4,7 +4,8 @@ import java.time.LocalDateTime
 
 data class CPU (
     var pctUsoCpu: Double,
-    var freqUsoCpu: Double
-        ) {
-    constructor(): this (0.0,0.0)
+    var freqUsoCpu: Double,
+    var dataHora: String
+    ){
+    constructor(): this (0.0,0.0, "")
 }

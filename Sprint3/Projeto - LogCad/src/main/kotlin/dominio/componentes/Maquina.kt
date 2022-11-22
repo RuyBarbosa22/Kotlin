@@ -7,8 +7,9 @@ data class Maquina (
     var totalDisco: Double,
     var nucleoL: Int,
     var nucleoF: Int,
-    var totalRam: Double
+    var totalRam: Double,
+    var dataHora: String
 
         ) {
-    constructor(): this ("", 0.0, 0,0,0.0)
+    constructor(): this ("", 0.0, 0,0,0.0, "")
 }
