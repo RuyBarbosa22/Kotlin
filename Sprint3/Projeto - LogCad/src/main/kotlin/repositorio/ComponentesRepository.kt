@@ -1,6 +1,7 @@
 package repositorio
 
 import dominio.Empresa
+import dominio.Usuario
 import dominio.componentes.CPU
 import dominio.componentes.Disco
 import dominio.componentes.Maquina
@@ -42,7 +43,16 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
             """
             insert into dbo.computador_kotlin (sistema_operacional, disco_total, cpu_nucleos_logicos, cpu_nucleos_fisicos, memoria_total, fk_empresa) values
             (?,?,?,?,?,?)
-        """, maquina.SO, maquina.totalDisco, maquina.nucleoL, maquina.nucleoF, maquina.totalRam, 1
+        """, maquina.SO, maquina.totalDisco, maquina.nucleoL, maquina.nucleoF, maquina.totalRam, maquina.fk_empresa
         )
     }
+
+    fun validaMaquina(usuario: Usuario): Boolean {
+        val selectMaquina = jdbcTemplate.queryForObject(
+            "select id from computador_kotlin where codEmpresa = ? and senha = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Usuario::class.java), usuario.email, usuario.senha
+        )
+        return selectLoginUser != null
+    }
+
     }
