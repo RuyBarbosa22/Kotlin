@@ -41,18 +41,18 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
     fun inserirMaquina(maquina: Maquina){
         jdbcTemplate.update(
             """
-            insert into dbo.computador_kotlin (sistema_operacional, disco_total, cpu_nucleos_logicos, cpu_nucleos_fisicos, memoria_total, fk_empresa) values
-            (?,?,?,?,?,?)
-        """, maquina.SO, maquina.totalDisco, maquina.nucleoL, maquina.nucleoF, maquina.totalRam, maquina.fk_empresa
+            insert into dbo.computador_kotlin (serialNumber, sistema_operacional, disco_total, cpu_nucleos_logicos, cpu_nucleos_fisicos, memoria_total, fk_empresa) values
+            (?,?,?,?,?,?,?)
+        """,  maquina.id, maquina.SO, maquina.totalDisco, maquina.nucleoL, maquina.nucleoF, maquina.totalRam, maquina.fk_empresa
         )
     }
 
-    fun validaMaquina(usuario: Usuario): Boolean {
+    fun validaMaquina(maquina: Maquina): Boolean {
         val selectMaquina = jdbcTemplate.queryForObject(
-            "select id from computador_kotlin where codEmpresa = ? and senha = ?",  // "?" será substituido pelo id
-            BeanPropertyRowMapper(Usuario::class.java), usuario.email, usuario.senha
+            "select * from computador_kotlin where serialNumber = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Maquina::class.java), maquina.id
         )
-        return selectLoginUser != null
+        return selectMaquina == null
     }
 
     }

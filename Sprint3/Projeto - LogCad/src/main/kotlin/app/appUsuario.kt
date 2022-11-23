@@ -31,83 +31,6 @@ open class Main {
                 .joinToString("")
         }
 
-        fun monitorar() {
-
-
-
-            var resp = showInputDialog(
-                """
-                Unidade de medida de tempo:
-                1 - segundos
-                2 - minutos
-                3 - horas
-            """.trimIndent()
-            )
-
-            while (true) {
-                if (resp == "1") {
-                    resp = "segundos"
-                    break
-                } else if (resp == "2") {
-                    resp = "minutos"
-                    break
-                } else if (resp == "3") {
-                    resp = "horas"
-                    break
-                } else {
-                    showMessageDialog(null, "Opção inválida!")
-                }
-            }
-
-            var resp2 = showInputDialog(
-                """
-                        De quantos em quantos $resp você deseja gravar
-                        os dados das máquinas?
-                    """.trimIndent()
-            ).toLong()
-
-            while (true) {
-                if (resp == "segundos") {
-                    resp2 *= 1000
-                    break
-                } else if (resp == "minutos") {
-                    resp2 = (resp2 * 60) * 1000
-                    break
-                } else if (!isNumeric(resp2.toString())) {
-                    showMessageDialog(null, "Valor inválido!")
-                } else {
-                    resp2 = ((resp2 * 60) * 60) * 1000
-                    break
-                }
-            }
-
-            val resp3 = showInputDialog(
-                """
-                Quantas vezes deseja monitorar?
-            """.trimIndent()
-            ).toInt()
-
-            while (true) {
-                if (!isNumeric(resp3.toString())) {
-                    showMessageDialog(null, "Valor inválido!")
-                } else if (resp3 < 1) {
-                    showMessageDialog(null, "Valor inválido!")
-                } else {
-                    break
-                }
-            }
-
-            fun monitorar(repeticao: Int, realizados: Int) {
-                if (realizados < repeticao) {
-                    monitorarComponentes()
-                    Timer().schedule(resp2) {
-                        monitorar(repeticao, realizados + 1)
-                    }
-                }
-            }
-            monitorar(resp3, 0)
-        }
-
         fun monitorarComponentes() {
             disco()
             cpu()
@@ -182,7 +105,7 @@ open class Main {
             componentes.inserirRam(ram)
         }
 
-        fun maquina() {
+        fun cadastroMaquina() {
 
             //imports de classe e jdbc
             val jdbcTemplate = Conexao().getJdbcTemplate()
@@ -202,8 +125,9 @@ open class Main {
             val loocaPc = looca.sistema
             val maquina = Maquina()
             val empresa = Empresa()
-            maquina.SO = loocaPc.sistemaOperacional
 
+            maquina.id = loocaCPU.id
+            maquina.SO = loocaPc.sistemaOperacional
             maquina.nucleoF = loocaCPU.numeroCpusFisicas
             maquina.nucleoL = loocaCPU.numeroCpusLogicas
             maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
@@ -211,6 +135,7 @@ open class Main {
             maquina.fk_empresa = empresa.id
             componentes.inserirMaquina(maquina)
         }
+
         fun cadastroUsuario() {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
@@ -259,11 +184,11 @@ open class Main {
                     showMessageDialog(null, "Código muito curto!")
                 } else if (codEmpresaCad.length > 5) {
                     showMessageDialog(null, "Código muito longo!")
-                } else if (usuarioRepository.validar(codEmpresaCad)) {
-                    val teste = empresaRepository.validaFk(codEmpresaCad)
-                    print(teste)
-                    if (teste != null) {
-                        usuario.fkEmpresa = teste.id
+                } else if (usuarioRepository.validar(usuario)) {
+                    val empresa = empresaRepository.validaFk(codEmpresaCad)
+                    print(empresa)
+                    if (empresa != null) {
+                        usuario.fkEmpresa = empresa
                     } else {
                         showMessageDialog(null, "Código inexistente")
                     }
@@ -292,6 +217,7 @@ open class Main {
                 }
             }
         }
+
         fun cadastroEmpresa() {
 
             val length = 5
@@ -392,6 +318,7 @@ open class Main {
 
             }
         }
+
         fun loginEmpresa() {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
@@ -420,7 +347,7 @@ open class Main {
                         when (resp) {
                             "1" -> monitorar()
                             "2" -> cadastroUsuario()
-                            "3" -> maquina()
+                            "3" -> cadastroMaquina()
                             else -> return
                         }
                     }
@@ -429,15 +356,17 @@ open class Main {
                 }
             }
         }
+
         fun loginUsuario() {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
             val usuario = Usuario()
             val usuarioRepository = UsuarioRepository(jdbcTemplate)
+            var emailLog: String
 
             while (true) {
                 while (true) {
-                    val emailLog = showInputDialog("Email:").also { usuario.email = it }.lowercase()
+                    emailLog = showInputDialog("Email:").also { usuario.email = it }.lowercase()
                     if (emailLog.indexOf("@") == -1) {
                         showMessageDialog(null, "Email inválido")
                     } else if (emailLog.indexOf(".com") == -1) {
@@ -448,41 +377,222 @@ open class Main {
                 }
 
                 while (true) {
-                    val senhaCad = showInputDialog("Senha de acesso")
-                    val senha2Cad = showInputDialog("Confirme a senha")
-                    if (senhaCad != senha2Cad) {
-                        showMessageDialog(null, "Senhas diferentes!")
-                    } else {
-                        usuario.senha = senhaCad
-                        val autenticado = usuarioRepository.validacaoLogin(usuario)
-                        if (autenticado) {
-                            val codEmpresaLog = showInputDialog("Código da empresa:")
-                            val autenticado2 = usuarioRepository.validar(codEmpresaLog)
-                            if (autenticado2) {
-                                while (true) {
-                                    val escolha3 = showInputDialog(
-                                        """
+                    val senha = showInputDialog("Senha de acesso").also { usuario.email = it }
+                    val autenticado :Boolean = usuarioRepository.validacaoLogin(emailLog, senha)
+                    if (autenticado) {
+                        usuario.codEmpresa = showInputDialog("Código da empresa:")
+                        val autenticado2 = usuarioRepository.validar(usuario)
+                        if (autenticado2) {
+                            while (true) {
+                                val escolha3 = showInputDialog(
+                                    """
                                     Bem vindo de volta!
                                     Oque deseja fazer?
                                     1 - Monitorar
                                     2 - sair
                                 """.trimIndent()
-                                    )
+                                )
 
-                                    when (escolha3) {
-                                        "1" -> monitorar()
-                                        else -> break
-                                    }
+                                when (escolha3) {
+                                    "1" -> monitorarUser()
+                                    else -> break
                                 }
-
-                            } else {
-                                showMessageDialog(null, "Código empresarial incorreto!")
                             }
+
                         } else {
-                            showMessageDialog(null, "Credenciais inválidas!")
+                            showMessageDialog(null, "Código empresarial incorreto!")
+                        }
+                    } else {
+                        showMessageDialog(null, "Credenciais inválidas!")
+                    }
+
+                }
+            }
+        }
+
+        fun monitorar() {
+
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val looca = Looca()
+            val maquina = Maquina()
+            maquina.id = looca.processador.id
+            val componentesRepository = ComponentesRepository(jdbcTemplate)
+
+
+            if (componentesRepository.validaMaquina(maquina)) {
+                showMessageDialog(
+                    null, """
+                    Seu computador não esta cadastrado!
+                            vamos cadastra-lo"
+                    """.trimIndent()
+                )
+                cadastroMaquina()
+            } else {
+
+                var resp = showInputDialog(
+                    """
+                Unidade de medida de tempo:
+                1 - segundos
+                2 - minutos
+                3 - horas
+            """.trimIndent()
+                )
+
+                while (true) {
+                    if (resp == "1") {
+                        resp = "segundos"
+                        break
+                    } else if (resp == "2") {
+                        resp = "minutos"
+                        break
+                    } else if (resp == "3") {
+                        resp = "horas"
+                        break
+                    } else {
+                        showMessageDialog(null, "Opção inválida!")
+                    }
+                }
+
+                var resp2 = showInputDialog(
+                    """
+                        De quantos em quantos $resp você deseja gravar
+                        os dados das máquinas?
+                    """.trimIndent()
+                ).toLong()
+
+                while (true) {
+                    if (resp == "segundos") {
+                        resp2 *= 1000
+                        break
+                    } else if (resp == "minutos") {
+                        resp2 = (resp2 * 60) * 1000
+                        break
+                    } else if (!isNumeric(resp2.toString())) {
+                        showMessageDialog(null, "Valor inválido!")
+                    } else {
+                        resp2 = ((resp2 * 60) * 60) * 1000
+                        break
+                    }
+                }
+
+                val resp3 = showInputDialog(
+                    """
+                Quantas vezes deseja monitorar?
+            """.trimIndent()
+                ).toInt()
+
+                while (true) {
+                    if (!isNumeric(resp3.toString())) {
+                        showMessageDialog(null, "Valor inválido!")
+                    } else if (resp3 < 1) {
+                        showMessageDialog(null, "Valor inválido!")
+                    } else {
+                        break
+                    }
+                }
+
+                fun monitorar(repeticao: Int, realizados: Int) {
+                    if (realizados < repeticao) {
+                        monitorarComponentes()
+                        Timer().schedule(resp2) {
+                            monitorar(repeticao, realizados + 1)
                         }
                     }
                 }
+                monitorar(resp3, 0)
+            }
+        }
+
+        fun monitorarUser() {
+
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val looca = Looca()
+            val maquina = Maquina()
+            maquina.id = looca.processador.id
+            val componentesRepository = ComponentesRepository(jdbcTemplate)
+
+            if (!componentesRepository.validaMaquina(maquina)) {
+                showMessageDialog(
+                    null, """
+                        Seu computador não esta cadastrado!
+                    Peça para que um administrador da sua empresa 
+                               cadastre sua máquina.
+                    """.trimIndent()
+                )
+                return
+            } else {
+
+                var resp = showInputDialog(
+                    """
+                Unidade de medida de tempo:
+                1 - segundos
+                2 - minutos
+                3 - horas
+            """.trimIndent()
+                )
+
+                while (true) {
+                    if (resp == "1") {
+                        resp = "segundos"
+                        break
+                    } else if (resp == "2") {
+                        resp = "minutos"
+                        break
+                    } else if (resp == "3") {
+                        resp = "horas"
+                        break
+                    } else {
+                        showMessageDialog(null, "Opção inválida!")
+                    }
+                }
+
+                var resp2 = showInputDialog(
+                    """
+                        De quantos em quantos $resp você deseja gravar
+                        os dados das máquinas?
+                    """.trimIndent()
+                ).toLong()
+
+                while (true) {
+                    if (resp == "segundos") {
+                        resp2 *= 1000
+                        break
+                    } else if (resp == "minutos") {
+                        resp2 = (resp2 * 60) * 1000
+                        break
+                    } else if (!isNumeric(resp2.toString())) {
+                        showMessageDialog(null, "Valor inválido!")
+                    } else {
+                        resp2 = ((resp2 * 60) * 60) * 1000
+                        break
+                    }
+                }
+
+                val resp3 = showInputDialog(
+                    """
+                Quantas vezes deseja monitorar?
+            """.trimIndent()
+                ).toInt()
+
+                while (true) {
+                    if (!isNumeric(resp3.toString())) {
+                        showMessageDialog(null, "Valor inválido!")
+                    } else if (resp3 < 1) {
+                        showMessageDialog(null, "Valor inválido!")
+                    } else {
+                        break
+                    }
+                }
+
+                fun monitorar(repeticao: Int, realizados: Int) {
+                    if (realizados < repeticao) {
+                        monitorarComponentes()
+                        Timer().schedule(resp2) {
+                            monitorar(repeticao, realizados + 1)
+                        }
+                    }
+                }
+                monitorar(resp3, 0)
             }
         }
 
@@ -493,7 +603,7 @@ open class Main {
                 val escolha = showInputDialog(
                     """
                         Seja bem vindo de volta! Oque deseja fazer?
-                        1 - Cadastrar
+                        1 - Cadastrar empresa
                         2 - Login empresarial
                         3 - Login usuário
                         3 - Sair

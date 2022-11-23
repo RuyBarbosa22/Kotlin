@@ -1,18 +1,16 @@
 package repositorio
 
-import dominio.Empresa
 import dominio.Usuario
-import dominio.componentes.CPU
 import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 
 @Suppress("UNREACHABLE_CODE")
 class UsuarioRepository(private val jdbcTemplate: JdbcTemplate) {
 
-    fun validar(codEmpresaCad: String): Boolean {
+    fun validar(usuario: Usuario): Boolean {
         val validaCod = jdbcTemplate.queryForObject(
-            "select * from empresa where codEmpresa = ?",
-            BeanPropertyRowMapper(Usuario::class.java), codEmpresaCad
+            "select * from dbo.empresa where codEmpresa = ?",
+            BeanPropertyRowMapper(Usuario::class.java), usuario.codEmpresa
         )
         return validaCod != null
     }
@@ -26,11 +24,10 @@ class UsuarioRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun validacaoLogin(usuario: Usuario): Boolean {
-        val selectLoginUser = jdbcTemplate.queryForObject(
-            "select * from empresa where email = ? and senha = ?",  // "?" será substituido pelo id
-            BeanPropertyRowMapper(Usuario::class.java), usuario.email, usuario.senha
-        )
-        return selectLoginUser != null
+    fun validacaoLogin(email: String, senha: String): Boolean {
+        return jdbcTemplate.queryForObject(
+            "select * from dbo.Usuario where email = ? and senha = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Usuario::class.java), email, senha
+        ) != null
     }
 }
