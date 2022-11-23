@@ -48,11 +48,26 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
     }
 
     fun validaMaquina(maquina: Maquina): Boolean {
-        val selectMaquina = jdbcTemplate.queryForObject(
-            "select * from computador_kotlin where serialNumber = ?",  // "?" será substituido pelo id
-            BeanPropertyRowMapper(Maquina::class.java), maquina.id
+        val validaCod = jdbcTemplate.queryForObject(
+            "select count (*) from computador_kotlin where serialNumber = ?",
+            BeanPropertyRowMapper(Int::class.java), maquina.id
         )
-        return selectMaquina == null
+        return validaCod == 0
+    }
+
+    fun existeVerificaEmpresa(empresa: Empresa): Boolean {
+        val validaCod = jdbcTemplate.queryForObject(
+            "select count(*) from computador_kotlin where serialNumber = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Int::class.java), empresa.id
+        )
+
+        return validaCod == 1
+    }
+    fun verificaEmpresa(empresa: Empresa): Maquina? {
+        return jdbcTemplate.queryForObject(
+            "select * from computador_kotlin where serialNumber = ?",  // "?" será substituido pelo id
+            BeanPropertyRowMapper(Maquina::class.java), empresa.id
+        )
     }
 
     }

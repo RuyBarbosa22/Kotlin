@@ -132,8 +132,15 @@ open class Main {
             maquina.nucleoL = loocaCPU.numeroCpusLogicas
             maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
             maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
-            maquina.fk_empresa = empresa.id
-            componentes.inserirMaquina(maquina)
+
+            if (componentes.existeVerificaEmpresa(empresa)) {
+                val maquinaBanco = componentes.verificaEmpresa(empresa)
+                maquina.fk_empresa = maquinaBanco!!.fk_empresa
+                componentes.inserirMaquina(maquina)
+            } else {
+
+            }
+
         }
 
         fun cadastroUsuario() {
@@ -511,7 +518,7 @@ open class Main {
             maquina.id = looca.processador.id
             val componentesRepository = ComponentesRepository(jdbcTemplate)
 
-            if (!componentesRepository.validaMaquina(maquina)) {
+            if (componentesRepository.validaMaquina(maquina)) {
                 showMessageDialog(
                     null, """
                         Seu computador não esta cadastrado!
