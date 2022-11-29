@@ -31,13 +31,15 @@ open class Main {
                 .joinToString("")
         }
 
-        fun monitorarComponentes() {
-            disco()
-            cpu()
-            ram()
+        fun monitorarComponentes(maquina: Maquina) {
+
+            println(maquina)
+            disco(maquina)
+            cpu(maquina)
+            ram(maquina)
         }
 
-        fun disco() {
+        fun disco(maquina: Maquina) {
 
             //imports de classe e jdbc
             val jdbcTemplate = Conexao().getJdbcTemplate()
@@ -49,7 +51,6 @@ open class Main {
             val agoraBonito = agora.format(formatoDH)
 
             val looca = Looca()
-            val maquina = Maquina()
 
             // DISCO
             val loocaDisco = looca.grupoDeDiscos
@@ -60,7 +61,7 @@ open class Main {
             componentes.inserirDisco(disco)
         }
 
-        fun cpu() {
+        fun cpu(maquina: Maquina) {
 
             //imports de classe e jdbc
             val jdbcTemplate = Conexao().getJdbcTemplate()
@@ -82,7 +83,7 @@ open class Main {
             componentes.inserirCpu(cpu)
         }
 
-        fun ram() {
+        fun ram(maquina: Maquina) {
 
             //imports de classe e jdbc
             val jdbcTemplate = Conexao().getJdbcTemplate()
@@ -103,44 +104,6 @@ open class Main {
             ram.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
             ram.dataHora = agoraBonito
             componentes.inserirRam(ram)
-        }
-
-        fun cadastroMaquina() {
-
-            //imports de classe e jdbc
-            val jdbcTemplate = Conexao().getJdbcTemplate()
-            val componentes = ComponentesRepository(jdbcTemplate)
-
-            // Variaveis para inserção de data/hora
-            val agora = LocalDateTime.now()
-            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-            val agoraBonito = agora.format(formatoDH)
-
-            val looca = Looca()
-            val loocaRam = looca.memoria
-            val loocaCPU = looca.processador
-            val loocaDisco = looca.grupoDeDiscos
-
-            // MÁQUINA
-            val loocaPc = looca.sistema
-            val maquina = Maquina()
-            val empresa = Empresa()
-
-            maquina.id = loocaCPU.id
-            maquina.SO = loocaPc.sistemaOperacional
-            maquina.nucleoF = loocaCPU.numeroCpusFisicas
-            maquina.nucleoL = loocaCPU.numeroCpusLogicas
-            maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
-            maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
-
-            if (componentes.existeVerificaEmpresa(empresa)) {
-                val maquinaBanco = componentes.verificaEmpresa(empresa)
-                maquina.fk_empresa = maquinaBanco!!.fk_empresa
-                componentes.inserirMaquina(maquina)
-            } else {
-
-            }
-
         }
 
         fun cadastroUsuario() {
@@ -328,15 +291,23 @@ open class Main {
 
         fun loginEmpresa() {
 
-            val jdbcTemplate = Conexao().getJdbcTemplate()
-            val empresa = Empresa()
-            val empresaRepository = EmpresaRepository(jdbcTemplate)
-
             while (true) {
+                val jdbcTemplate = Conexao().getJdbcTemplate()
+                var empresa = Empresa()
+                val maquina = Maquina()
+                val empresaRepository = EmpresaRepository(jdbcTemplate)
+
                 val emailLog = showInputDialog("Email:").lowercase()
                 val senhaLog = showInputDialog("Senha de acesso:")
                 val autenticado = empresaRepository.validacaoLogin(emailLog, senhaLog)
                 if (autenticado) {
+                    if (!empresaRepository.validaEmpresa1(emailLog)) {
+                        empresa = empresaRepository.validaEmpresa2(emailLog)
+                        println(empresa)
+                        println("Login Empresa")
+                    } else {
+                        println("erro na validação de existencia de empresa")
+                    }
                     showMessageDialog(null, "Login realizado com sucesso")
                     showMessageDialog(null, "Bem vindo de volta ${empresa.nome}!")
 
@@ -352,9 +323,9 @@ open class Main {
                         )
 
                         when (resp) {
-                            "1" -> monitorar()
+                            "1" -> monitorar(maquina, empresa)
                             "2" -> cadastroUsuario()
-                            "3" -> cadastroMaquina()
+                            "3" -> cadastroMaquina(empresa)
                             else -> return
                         }
                     }
@@ -362,6 +333,52 @@ open class Main {
                     showMessageDialog(null, "credenciais inválidas")
                 }
             }
+        }
+
+        fun cadastroMaquina(empresa: Empresa) {
+
+            //imports de classe e jdbc
+            val jdbcTemplate = Conexao().getJdbcTemplate()
+            val componentes = ComponentesRepository(jdbcTemplate)
+
+            // Variaveis para inserção de data/hora
+            val agora = LocalDateTime.now()
+            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+            val agoraBonito = agora.format(formatoDH)
+
+            val looca = Looca()
+            val loocaRam = looca.memoria
+            val loocaCPU = looca.processador
+            val loocaDisco = looca.grupoDeDiscos
+
+            // MÁQUINA
+            val loocaPc = looca.sistema
+            val maquina = Maquina()
+
+            println(empresa)
+            println("Cadastro Maquina")
+
+            maquina.serialNumber = loocaCPU.id
+            maquina.SO = loocaPc.sistemaOperacional
+            maquina.nucleoF = loocaCPU.numeroCpusFisicas
+            maquina.nucleoL = loocaCPU.numeroCpusLogicas
+            maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+            maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
+            maquina.fk_empresa = empresa.id
+
+            showMessageDialog(null, "Aguarde...")
+            if (!componentes.validaMaquina2(maquina, empresa)) {
+                showMessageDialog(
+                    null, """
+                    Máquina já cadastrada!
+                """.trimIndent()
+                )
+                return
+            } else {
+                componentes.inserirMaquina(maquina)
+                showMessageDialog(null, "Cadastro realizado!")
+            }
+
         }
 
         fun loginUsuario() {
@@ -385,7 +402,7 @@ open class Main {
 
                 while (true) {
                     val senha = showInputDialog("Senha de acesso").also { usuario.email = it }
-                    val autenticado :Boolean = usuarioRepository.validacaoLogin(emailLog, senha)
+                    val autenticado: Boolean = usuarioRepository.validacaoLogin(emailLog, senha)
                     if (autenticado) {
                         usuario.codEmpresa = showInputDialog("Código da empresa:")
                         val autenticado2 = usuarioRepository.validar(usuario)
@@ -417,23 +434,21 @@ open class Main {
             }
         }
 
-        fun monitorar() {
+        fun monitorar(maquina: Maquina, empresa: Empresa) {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
-            val looca = Looca()
-            val maquina = Maquina()
-            maquina.id = looca.processador.id
-            val componentesRepository = ComponentesRepository(jdbcTemplate)
+            val componentes = ComponentesRepository(jdbcTemplate)
 
+            println(maquina)
 
-            if (componentesRepository.validaMaquina(maquina)) {
+            if (componentes.validaMaquina(maquina)) {
                 showMessageDialog(
                     null, """
-                    Seu computador não esta cadastrado!
-                            vamos cadastra-lo"
-                    """.trimIndent()
+                    Máquina não cadastrada!
+                    Vamos cadastra-lá...
+                """.trimIndent()
                 )
-                cadastroMaquina()
+                cadastroMaquina(empresa)
             } else {
 
                 var resp = showInputDialog(
@@ -500,7 +515,7 @@ open class Main {
 
                 fun monitorar(repeticao: Int, realizados: Int) {
                     if (realizados < repeticao) {
-                        monitorarComponentes()
+                        monitorarComponentes(maquina)
                         Timer().schedule(resp2) {
                             monitorar(repeticao, realizados + 1)
                         }
@@ -515,10 +530,10 @@ open class Main {
             val jdbcTemplate = Conexao().getJdbcTemplate()
             val looca = Looca()
             val maquina = Maquina()
-            maquina.id = looca.processador.id
-            val componentesRepository = ComponentesRepository(jdbcTemplate)
+            maquina.serialNumber = looca.processador.id
+            val componentes = ComponentesRepository(jdbcTemplate)
 
-            if (componentesRepository.validaMaquina(maquina)) {
+            if (componentes.validaMaquina(maquina)) {
                 showMessageDialog(
                     null, """
                         Seu computador não esta cadastrado!
@@ -593,7 +608,7 @@ open class Main {
 
                 fun monitorar(repeticao: Int, realizados: Int) {
                     if (realizados < repeticao) {
-                        monitorarComponentes()
+                        monitorarComponentes(maquina)
                         Timer().schedule(resp2) {
                             monitorar(repeticao, realizados + 1)
                         }
@@ -621,7 +636,7 @@ open class Main {
                     "1" -> cadastroEmpresa()
                     "2" -> loginEmpresa()
                     "3" -> loginUsuario()
-                    else -> break
+                    else -> return
                 }
             }
         }

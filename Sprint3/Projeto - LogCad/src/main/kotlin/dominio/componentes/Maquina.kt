@@ -1,9 +1,8 @@
 package dominio.componentes
 
-import java.time.LocalDateTime
-
 data class Maquina (
-    var id: String,
+    var id: Int,
+    var serialNumber: String,
     var SO: String,
     var totalDisco: Double,
     var nucleoL: Int,
@@ -13,5 +12,5 @@ data class Maquina (
     var fk_empresa: Int
 
         ) {
-    constructor(): this ("","", 0.0, 0,0,0.0, "", 1)
+    constructor(): this (0,"","", 0.0, 0,0,0.0, "", 1)
 }

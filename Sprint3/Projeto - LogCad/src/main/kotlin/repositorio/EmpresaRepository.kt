@@ -38,7 +38,28 @@ class EmpresaRepository(val jdbcTemplate: JdbcTemplate) {
         )
         return valida
     }
+
+    fun validaEmpresa1 (emailLog: String): Boolean {
+        val valida = jdbcTemplate.queryForObject(
+            "select count(*) from empresa where email = ?",
+            Int::class.java, emailLog
+        )
+        return valida == 0
+    }
+    fun validaEmpresa2 (emailLog: String): Empresa {
+        val valida = jdbcTemplate.queryForObject(
+            "select * from empresa where email = ?",
+            BeanPropertyRowMapper(Empresa::class.java), emailLog
+        )
+        return valida
+    }
 }
+
+
+
+
+
+
 
 
 
