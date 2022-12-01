@@ -17,9 +17,9 @@ fun main() {
     println(horaAtual.format(formatoHour))
     println(horaAtual.format(formatoDay))
 
-    val Desktop= ShellLocation.HOME.resolve("C:\\Users\\Mene\\Desktop")
-    shellRun(Desktop) {
-        files.openFile("C:\\Users\\Mene\\Desktop\\teste.bat")
-    }
+
+    shellRun("MSG", listOf<String>("* ", "Aviso, ", "você está fora do horario de funcionamento!"), null)
+    shellRun("MSG", listOf<String>("* ", "Um alerta será gerado e a máquina será encerrada em poucos segundos"), null)
+    shellRun("shutdown", listOf<String>("/s", "/t", "100"), null)
 }
 
