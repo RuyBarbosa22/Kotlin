@@ -7,7 +7,14 @@ import org.springframework.jdbc.core.JdbcTemplate
 @Suppress("UNREACHABLE_CODE")
 class UsuarioRepository(private val jdbcTemplate: JdbcTemplate) {
 
-    fun validar(usuario: Usuario): Boolean {
+    fun validar1(usuario: Usuario): Boolean {
+        val validaCod = jdbcTemplate.queryForObject(
+            "select count (*) from dbo.empresa where codEmpresa = ?",
+            Int::class.java, usuario.codEmpresa
+        )
+        return validaCod == 0
+    }
+    fun validar2(usuario: Usuario): Boolean {
         val validaCod = jdbcTemplate.queryForObject(
             "select * from dbo.empresa where codEmpresa = ?",
             BeanPropertyRowMapper(Usuario::class.java), usuario.codEmpresa

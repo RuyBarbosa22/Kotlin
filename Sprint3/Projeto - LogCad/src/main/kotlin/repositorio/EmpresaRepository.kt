@@ -15,9 +15,16 @@ class EmpresaRepository(val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun validacaoLogin(emailLog: String, senhaLog: String): Boolean {
+    fun validacaoLogin1(emailLog: String, senhaLog: String): Boolean {
         val selectLogin = jdbcTemplate.queryForObject(
-            "select * from empresa where email = ? and senha = ?",  // "?" será substituido pelo id
+            "select count (*) from empresa where email = ? and senha = ?",  // "?" será substituido pelo id
+            Int::class.java, emailLog, senhaLog
+        )
+        return selectLogin == 0
+    }
+    fun validacaoLogin2(emailLog: String, senhaLog: String): Boolean {
+        val selectLogin = jdbcTemplate.queryForObject(
+            "select count (*) from empresa where email = ? and senha = ?",  // "?" será substituido pelo id
             BeanPropertyRowMapper(Empresa::class.java), emailLog, senhaLog
         )
         return selectLogin != null
@@ -28,15 +35,6 @@ class EmpresaRepository(val jdbcTemplate: JdbcTemplate) {
     fun isNumeric(telCad: String): Boolean {
         val regex = "-?[0-9]+(\\.[0-9]+)?".toRegex()
         return telCad.matches(regex)
-    }
-
-
-    fun validaFk (codEmpresaCad: String): String? {
-        val valida = jdbcTemplate.queryForObject(
-            "select id from empresa where codEmpresa = ?",
-            BeanPropertyRowMapper(String::class.java), codEmpresaCad
-        )
-        return valida
     }
 
     fun validaEmpresa1 (emailLog: String): Boolean {

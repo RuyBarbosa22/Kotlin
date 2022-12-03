@@ -7,7 +7,7 @@ data class Usuario(
     var tel: String,
     var senha: String,
     var codEmpresa: String,
-    var fkEmpresa: String
+    var fkEmpresa: Int
 ) {
-    constructor() : this("","","", "","", "", "")
+    constructor() : this("","","", "","", "", 0)
 }

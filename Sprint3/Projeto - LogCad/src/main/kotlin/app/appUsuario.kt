@@ -106,7 +106,7 @@ open class Main {
             componentes.inserirRam(ram)
         }
 
-        fun cadastroUsuario() {
+        fun cadastroUsuario(empresa: Empresa) {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
             val usuarioRepository = UsuarioRepository(jdbcTemplate)
@@ -154,22 +154,17 @@ open class Main {
                     showMessageDialog(null, "Código muito curto!")
                 } else if (codEmpresaCad.length > 5) {
                     showMessageDialog(null, "Código muito longo!")
-                } else if (usuarioRepository.validar(usuario)) {
-                    val empresa = empresaRepository.validaFk(codEmpresaCad)
-                    print(empresa)
-                    if (empresa != null) {
-                        usuario.fkEmpresa = empresa
-                    } else {
-                        showMessageDialog(null, "Código inexistente")
-                    }
-                    break
+                } else if (usuarioRepository.validar2(usuario)) {
+                    usuario.fkEmpresa = empresa.id
                 } else {
-                    showMessageDialog(null, "Código inesxistente")
+                    showMessageDialog(null, "Código inexistente")
                 }
+                break
             }
 
+
             while (true) {
-                val senhaCad = showInputDialog("Senha de acesso")
+                val senhaCad = showInputDialog("Senha de acesso do usuário")
                 val senha2Cad = showInputDialog("Confirme a senha")
                 if (senhaCad != senha2Cad) {
                     showMessageDialog(null, "Senhas diferentes!")
@@ -299,38 +294,46 @@ open class Main {
 
                 val emailLog = showInputDialog("Email:").lowercase()
                 val senhaLog = showInputDialog("Senha de acesso:")
-                val autenticado = empresaRepository.validacaoLogin(emailLog, senhaLog)
-                if (autenticado) {
-                    if (!empresaRepository.validaEmpresa1(emailLog)) {
-                        empresa = empresaRepository.validaEmpresa2(emailLog)
-                        println(empresa)
-                        println("Login Empresa")
-                    } else {
-                        println("erro na validação de existencia de empresa")
-                    }
-                    showMessageDialog(null, "Login realizado com sucesso")
-                    showMessageDialog(null, "Bem vindo de volta ${empresa.nome}!")
+                if (!empresaRepository.validacaoLogin1(emailLog, senhaLog)) {
+                    val autenticado = empresaRepository.validacaoLogin2(emailLog, senhaLog)
+                    if (autenticado) {
+                        if (!empresaRepository.validaEmpresa1(emailLog)) {
+                            empresa = empresaRepository.validaEmpresa2(emailLog)
+                            println(empresa)
+                            println("Login Empresa")
+                        } else {
+                            println("erro na validação de existencia de empresa")
+                        }
+                        showMessageDialog(null, "Login realizado com sucesso")
+                        showMessageDialog(null, "Bem vindo de volta ${empresa.nome}!")
 
-                    while (true) {
-                        val resp = showInputDialog(
-                            """
+                        while (true) {
+                            val resp = showInputDialog(
+                                """
                         Oque deseja fazer?
                         1 - Monitorar Hardware
                         2 - Cadastrar usuários
                         3 - Cadastrar Máquinas
                         4 - Logout
             """.trimIndent()
-                        )
+                            )
 
-                        when (resp) {
-                            "1" -> monitorar(maquina, empresa)
-                            "2" -> cadastroUsuario()
-                            "3" -> cadastroMaquina(empresa)
-                            else -> return
+                            when (resp) {
+                                "1" -> monitorar(maquina, empresa)
+                                "2" -> cadastroUsuario(empresa)
+                                "3" -> cadastroMaquina(empresa)
+                                else -> return
+                            }
                         }
+                    } else {
+                        showMessageDialog(null, "credenciais inválidas")
                     }
                 } else {
-                    showMessageDialog(null, "credenciais inválidas")
+                    showMessageDialog(
+                        null, """
+                            Credenciais inválidas!
+                        """.trimIndent()
+                    )
                 }
             }
         }
@@ -341,11 +344,7 @@ open class Main {
             val jdbcTemplate = Conexao().getJdbcTemplate()
             val componentes = ComponentesRepository(jdbcTemplate)
 
-            // Variaveis para inserção de data/hora
-            val agora = LocalDateTime.now()
-            val formatoDH = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-            val agoraBonito = agora.format(formatoDH)
-
+            // Looca
             val looca = Looca()
             val loocaRam = looca.memoria
             val loocaCPU = looca.processador
@@ -362,7 +361,7 @@ open class Main {
             maquina.SO = loocaPc.sistemaOperacional
             maquina.nucleoF = loocaCPU.numeroCpusFisicas
             maquina.nucleoL = loocaCPU.numeroCpusLogicas
-            maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+            maquina.totalDisco = looca.grupoDeDiscos.tamanhoTotal.toDouble()/1024/1024/1024
             maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
             maquina.fk_empresa = empresa.id
 
@@ -405,31 +404,37 @@ open class Main {
                     val autenticado: Boolean = usuarioRepository.validacaoLogin(emailLog, senha)
                     if (autenticado) {
                         usuario.codEmpresa = showInputDialog("Código da empresa:")
-                        val autenticado2 = usuarioRepository.validar(usuario)
-                        if (autenticado2) {
-                            while (true) {
-                                val escolha3 = showInputDialog(
-                                    """
+                        if (!usuarioRepository.validar1(usuario)) {
+                            val autenticado2 = usuarioRepository.validar2(usuario)
+                            if (autenticado2) {
+                                while (true) {
+                                    val escolha3 = showInputDialog(
+                                        """
                                     Bem vindo de volta!
                                     Oque deseja fazer?
                                     1 - Monitorar
                                     2 - sair
                                 """.trimIndent()
-                                )
+                                    )
 
-                                when (escolha3) {
-                                    "1" -> monitorarUser()
-                                    else -> break
+                                    when (escolha3) {
+                                        "1" -> monitorarUser()
+                                        else -> return
+                                    }
                                 }
+
+                            } else {
+                                showMessageDialog(null, "Código empresarial incorreto!")
                             }
-
                         } else {
-                            showMessageDialog(null, "Código empresarial incorreto!")
+                            showMessageDialog(
+                                null, """
+                                Credenciais inválidas!
+                            """.trimIndent()
+                            )
                         }
-                    } else {
-                        showMessageDialog(null, "Credenciais inválidas!")
-                    }
 
+                    }
                 }
             }
         }
