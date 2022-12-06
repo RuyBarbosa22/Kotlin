@@ -31,7 +31,15 @@ class UsuarioRepository(private val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun validacaoLogin(email: String, senha: String): Boolean {
+    fun validacaoLogin1(email: String, senha: String): Boolean {
+        val retorno = jdbcTemplate.queryForObject(
+            "select count (*) from dbo.Usuario where email = ? and senha = ?",  // "?" será substituido pelo id
+            Int::class.java, email, senha
+        )
+        return retorno == 0
+    }
+
+    fun validacaoLogin2(email: String, senha: String): Boolean {
         return jdbcTemplate.queryForObject(
             "select * from dbo.Usuario where email = ? and senha = ?",  // "?" será substituido pelo id
             BeanPropertyRowMapper(Usuario::class.java), email, senha

@@ -334,6 +334,7 @@ open class Main {
                             Credenciais inválidas!
                         """.trimIndent()
                     )
+                    return
                 }
             }
         }
@@ -361,12 +362,12 @@ open class Main {
             maquina.SO = loocaPc.sistemaOperacional
             maquina.nucleoF = loocaCPU.numeroCpusFisicas
             maquina.nucleoL = loocaCPU.numeroCpusLogicas
-            maquina.totalDisco = looca.grupoDeDiscos.tamanhoTotal.toDouble()/1024/1024/1024
+            maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
             maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
             maquina.fk_empresa = empresa.id
 
             showMessageDialog(null, "Aguarde...")
-            if (!componentes.validaMaquina2(maquina, empresa)) {
+            if (!componentes.validaMaquina2(maquina) || componentes.validaMaquina3(maquina)) {
                 showMessageDialog(
                     null, """
                     Máquina já cadastrada!
@@ -400,40 +401,45 @@ open class Main {
                 }
 
                 while (true) {
-                    val senha = showInputDialog("Senha de acesso").also { usuario.email = it }
-                    val autenticado: Boolean = usuarioRepository.validacaoLogin(emailLog, senha)
-                    if (autenticado) {
-                        usuario.codEmpresa = showInputDialog("Código da empresa:")
-                        if (!usuarioRepository.validar1(usuario)) {
-                            val autenticado2 = usuarioRepository.validar2(usuario)
-                            if (autenticado2) {
-                                while (true) {
-                                    val escolha3 = showInputDialog(
-                                        """
+                    val senha = showInputDialog("Senha de acesso").also { usuario.senha = it }
+                    if (usuarioRepository.validacaoLogin1(emailLog, senha)) {
+                        showMessageDialog(null, "Credenciais inválidas!")
+                        return
+                    } else {
+                        val autenticado: Boolean = usuarioRepository.validacaoLogin2(emailLog, senha)
+                        if (autenticado) {
+                            usuario.codEmpresa = showInputDialog("Código da empresa:")
+                            if (!usuarioRepository.validar1(usuario)) {
+                                val autenticado2 = usuarioRepository.validar2(usuario)
+                                if (autenticado2) {
+                                    while (true) {
+                                        val escolha3 = showInputDialog(
+                                            """
                                     Bem vindo de volta!
                                     Oque deseja fazer?
                                     1 - Monitorar
                                     2 - sair
                                 """.trimIndent()
-                                    )
+                                        )
 
-                                    when (escolha3) {
-                                        "1" -> monitorarUser()
-                                        else -> return
+                                        when (escolha3) {
+                                            "1" -> monitorarUser()
+                                            else -> return
+                                        }
                                     }
-                                }
 
+                                } else {
+                                    showMessageDialog(null, "Código empresarial incorreto!")
+                                }
                             } else {
-                                showMessageDialog(null, "Código empresarial incorreto!")
-                            }
-                        } else {
-                            showMessageDialog(
-                                null, """
+                                showMessageDialog(
+                                    null, """
                                 Credenciais inválidas!
                             """.trimIndent()
-                            )
-                        }
+                                )
+                            }
 
+                        }
                     }
                 }
             }

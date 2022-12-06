@@ -55,12 +55,20 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
         return validaCod == 0
     }
 
-    fun validaMaquina2(maquina: Maquina, empresa: Empresa): Boolean {
+    fun validaMaquina2(maquina: Maquina): Boolean {
         val validaCod = jdbcTemplate.queryForObject(
-            "select count (*) from computador_kotlin, empresa where computador_kotlin.serialNumber = ? and computador_kotlin.id = ?",
-            Int::class.java, maquina.serialNumber, empresa.id
+            "select count (*) from computador_kotlin where computador_kotlin.serialNumber = ?",
+            Int::class.java, maquina.serialNumber
         )
         return validaCod == 0
+    }
+
+    fun validaMaquina3(maquina: Maquina): Boolean {
+        val validaCod = jdbcTemplate.queryForObject(
+            "select count (*) from computador_kotlin where computador_kotlin.serialNumber = ?",
+            Int::class.java, maquina.serialNumber
+        )
+        return validaCod >= 1
     }
 
     }
