@@ -21,14 +21,13 @@ import javax.swing.JOptionPane.showMessageDialog
 import kotlin.concurrent.schedule
 import kotlin.reflect.typeOf
 
+@Suppress("UNREACHABLE_CODE")
 open class Main {
     companion object {
 
         fun getRandomString(length: Int): String {
             val charset = "0123456789"
-            return (1..length)
-                .map { charset.random() }
-                .joinToString("")
+            return (1..length).map { charset.random() }.joinToString("")
         }
 
         fun monitorarComponentes(maquina: Maquina) {
@@ -314,7 +313,8 @@ open class Main {
                         1 - Monitorar Hardware
                         2 - Cadastrar usuários
                         3 - Cadastrar Máquinas
-                        4 - Logout
+                        4 - Registrar expediente
+                        5 - Logout
             """.trimIndent()
                             )
 
@@ -322,6 +322,7 @@ open class Main {
                                 "1" -> monitorar(maquina, empresa)
                                 "2" -> cadastroUsuario(empresa)
                                 "3" -> cadastroMaquina(empresa)
+                                "4" -> cadastroExpediente(maquina, empresa)
                                 else -> return
                             }
                         }
@@ -338,6 +339,118 @@ open class Main {
                 }
             }
         }
+
+        fun cadastroExpediente(maquina: Maquina, empresa: Empresa) {
+
+            while (true) {
+                showMessageDialog(null, """
+                    Vamos definir o horário de expediente!
+                       Lembre-se de usar o formato 24h
+                        Digite os horários a seguir
+                """.trimIndent())
+
+                var hora1: String
+                var hora2: String
+                var minuto1: String
+                var minuto2: String
+
+                while (true) {
+                    hora1 = showInputDialog(
+                        """
+                Hora de entrada:
+            """.trimIndent())
+
+                    if (isNumeric(hora1)) {
+                        break
+                    } else if (hora1.length > 2 || hora1.isEmpty()) {
+                        showMessageDialog(null, "Valor inválido")
+                    } else {
+                        showMessageDialog(null, "Apenas a hora! (número)")
+                    }
+                }
+
+                while (true) {
+                    minuto1 = showInputDialog("""
+                        Minuto de entrada:
+                    """.trimIndent())
+
+                    if (isNumeric(minuto1)) {
+                        break
+                    } else if (minuto1.length > 2 || minuto1.isEmpty()) {
+                        showMessageDialog(null, "Valor inválido")
+                    } else {
+                        showMessageDialog(null, "Apenas o minuto! (número)")
+                    }
+                }
+
+                showMessageDialog(null,"""
+                O horário de entrada será:
+                    ${hora1}:${minuto1}:00
+                 """.trimIndent())
+
+                showMessageDialog(null, """
+                Vamos definir o horário de saida.
+                 Lembre-se de usar o formato 24h
+                """.trimIndent())
+
+                while (true) {
+                    hora2 = showInputDialog(
+                        """
+                    Hora de saída:
+                """.trimIndent())
+
+                    if (isNumeric(hora2)) {
+                        break
+                    } else if (hora2.length > 2 || hora2.isEmpty()) {
+                        showMessageDialog(null, "Valor inválido")
+                    } else {
+                        showMessageDialog(null, "Apenas a hora! (número)")
+                    }
+                }
+
+                while (true) {
+                    minuto2 = showInputDialog(
+                        """
+                    Minuto de saída:
+                """.trimIndent()
+                    )
+
+                    if (isNumeric(minuto2)) {
+                        break
+                    } else if (minuto2.length > 2 || minuto2.isEmpty()) {
+                        showMessageDialog(null, "Valor inválido")
+                    } else {
+                        showMessageDialog(null, "Apenas o minuto! (número)")
+                    }
+                }
+
+                while (true) {
+                    val resp1 = showInputDialog("""
+                    O horário de espediente será: 
+                    Entrada: $hora1:$minuto1:00
+                    Saída: $hora2:$minuto2:00
+                    
+                    Deseja salvar alterações?
+                    1 - Salvar
+                    2 - Cancelar
+                    
+                """.trimIndent()).toInt()
+
+                    if (resp1 == 1) {
+                        showMessageDialog(null, "Salvando...")
+                        return
+                    } else if (resp1 ==2) {
+                        showMessageDialog(null, "n salva")
+                    } else {
+                        showMessageDialog(null,"Resposta inválida!")
+                    }
+                }
+
+
+
+            }
+        }
+
 
         fun cadastroMaquina(empresa: Empresa) {
 
