@@ -13,13 +13,11 @@ import repositorio.ComponentesRepository
 import repositorio.EmpresaRepository
 import repositorio.UsuarioRepository
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.swing.JOptionPane.showInputDialog
 import javax.swing.JOptionPane.showMessageDialog
 import kotlin.concurrent.schedule
-import kotlin.reflect.typeOf
 
 @Suppress("UNREACHABLE_CODE")
 open class Main {
@@ -31,6 +29,9 @@ open class Main {
         }
 
         fun monitorarComponentes(maquina: Maquina) {
+
+            println(maquina)
+            println("dentro de monitorarComponentes()")
 
             println(maquina)
             disco(maquina)
@@ -57,6 +58,7 @@ open class Main {
             disco.qtdDisco = loocaDisco.quantidadeDeDiscos
             disco.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
             disco.dataHora = agoraBonito
+            disco.fk_computador = maquina.id
             componentes.inserirDisco(disco)
         }
 
@@ -79,6 +81,7 @@ open class Main {
             cpu.freqUsoCpu = loocaCPU.frequencia.toDouble() / 1024 / 1024 / 1024
             cpu.pctUsoCpu = loocaCPU.uso
             cpu.dataHora = agoraBonito
+            cpu.fk_computador = maquina.id
             componentes.inserirCpu(cpu)
         }
 
@@ -102,6 +105,7 @@ open class Main {
             ram.livreRam = loocaRam.total - loocaRam.emUso.toDouble() / 1024 / 1024 / 1024
             ram.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
             ram.dataHora = agoraBonito
+            ram.fk_computador = maquina.id
             componentes.inserirRam(ram)
         }
 
@@ -288,7 +292,7 @@ open class Main {
             while (true) {
                 val jdbcTemplate = Conexao().getJdbcTemplate()
                 var empresa = Empresa()
-                val maquina = Maquina()
+                var maquina = Maquina()
                 val empresaRepository = EmpresaRepository(jdbcTemplate)
 
                 val emailLog = showInputDialog("Email:").lowercase()
@@ -305,6 +309,18 @@ open class Main {
                         }
                         showMessageDialog(null, "Login realizado com sucesso")
                         showMessageDialog(null, "Bem vindo de volta ${empresa.nome}!")
+
+                        val componentes = ComponentesRepository(jdbcTemplate)
+                        val looca = Looca()
+                        val id = looca.processador.id
+
+                        if (!componentes.validaMaquina4(id)){
+                            val teste = componentes.identificaMaquina(id)
+                            println(teste)
+                            maquina = teste
+                            println("minha maquina")
+                            println(maquina)
+                        }
 
                         while (true) {
                             val resp = showInputDialog(
@@ -472,11 +488,11 @@ open class Main {
             println("Cadastro Maquina")
 
             maquina.serialNumber = loocaCPU.id
-            maquina.SO = loocaPc.sistemaOperacional
-            maquina.nucleoF = loocaCPU.numeroCpusFisicas
-            maquina.nucleoL = loocaCPU.numeroCpusLogicas
-            maquina.totalDisco = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
-            maquina.totalRam = loocaRam.total.toDouble() / 1024 / 1024 / 1024
+            maquina.sistema_operacional = loocaPc.sistemaOperacional
+            maquina.cpu_nucleos_fisicos = loocaCPU.numeroCpusFisicas
+            maquina.cpu_nucleos_logicos = loocaCPU.numeroCpusLogicas
+            maquina.disco_total = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+            maquina.memoria_total = loocaRam.total.toDouble() / 1024 / 1024 / 1024
             maquina.fk_empresa = empresa.id
 
             showMessageDialog(null, "Aguarde...")
@@ -562,10 +578,14 @@ open class Main {
 
             val jdbcTemplate = Conexao().getJdbcTemplate()
             val componentes = ComponentesRepository(jdbcTemplate)
+            val looca = Looca()
 
-            println(maquina)
+            val idMachine: String
+            idMachine = looca.processador.id
+            println(idMachine)
+            println("Dentro de monitorar")
 
-            if (componentes.validaMaquina(maquina)) {
+            if (componentes.validaMaquina4(idMachine)) {
                 showMessageDialog(
                     null, """
                     Máquina não cadastrada!
