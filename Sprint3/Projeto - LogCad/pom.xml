@@ -26,7 +26,7 @@
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
-        <testSourceDirectory>src/test/kotlin</testSourceDirectory>
+<!--        <testSourceDirectory>src/test/kotlin</testSourceDirectory>-->
         <plugins>
 
             <plugin>
@@ -115,13 +115,6 @@
             <version>2.8.0</version>
         </dependency>
 
-        <!-- Adiciona o Driver JDBC do banco H2 ao projeto -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.1.214</version>
-        </dependency>
-
         <!-- SQL Server -->
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
@@ -153,11 +146,7 @@
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>1.7.10</version>
         </dependency>
-        <dependency>
-            <groupId>org.example</groupId>
-            <artifactId>LogCad</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+
     </dependencies>
 
 </project>
