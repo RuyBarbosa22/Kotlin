@@ -333,7 +333,7 @@ fun loginEmpresa() {
                         "1" -> monitorar(maquina, empresa)
                         "2" -> cadastroUsuario(empresa)
                         "3" -> cadastroMaquina(empresa)
-                        "4" -> cadastroExpediente(empresa)
+                        "4" -> cadastroExpediente()
                         else -> return
                     }
                 }
@@ -351,9 +351,9 @@ fun loginEmpresa() {
     }
 }
 
-fun cadastroExpediente(empresa: Empresa) {
+fun cadastroExpediente() {
 
-    val expediente = Expediente()
+//    val expediente = Expediente()
 
     while (true) {
         JOptionPane.showMessageDialog(

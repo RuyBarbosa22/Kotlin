@@ -19,8 +19,6 @@ import loginUsuario
 //import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.swing.JOptionPane.showInputDialog
-//import javax.swing.JOptionPane.showMessageDialog
-//import kotlin.concurrent.schedule
 
 open class Main {
     companion object {
