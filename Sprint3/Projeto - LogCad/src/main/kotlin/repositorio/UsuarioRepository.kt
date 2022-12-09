@@ -4,7 +4,6 @@ import dominio.Usuario
 import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 
-@Suppress("UNREACHABLE_CODE")
 class UsuarioRepository(private val jdbcTemplate: JdbcTemplate) {
 
     fun validar1(usuario: Usuario): Boolean {

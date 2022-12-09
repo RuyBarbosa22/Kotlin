@@ -2,6 +2,7 @@ import com.github.britooo.looca.api.core.Looca
 import com.microsoft.sqlserver.jdbc.StringUtils
 import config.Conexao
 import dominio.Empresa
+import dominio.Expediente
 import dominio.Usuario
 import dominio.componentes.CPU
 import dominio.componentes.Disco
@@ -332,7 +333,7 @@ fun loginEmpresa() {
                         "1" -> monitorar(maquina, empresa)
                         "2" -> cadastroUsuario(empresa)
                         "3" -> cadastroMaquina(empresa)
-                        "4" -> cadastroExpediente(maquina, empresa)
+                        "4" -> cadastroExpediente(empresa)
                         else -> return
                     }
                 }
@@ -350,7 +351,9 @@ fun loginEmpresa() {
     }
 }
 
-fun cadastroExpediente(maquina: Maquina, empresa: Empresa) {
+fun cadastroExpediente(empresa: Empresa) {
+
+    val expediente = Expediente()
 
     while (true) {
         JOptionPane.showMessageDialog(
@@ -521,6 +524,7 @@ fun loginUsuario() {
     val usuario = Usuario()
     val usuarioRepository = UsuarioRepository(jdbcTemplate)
     var emailLog: String
+    var maquina = Maquina()
 
     while (true) {
         while (true) {
@@ -546,6 +550,16 @@ fun loginUsuario() {
                     if (!usuarioRepository.validar1(usuario)) {
                         val autenticado2 = usuarioRepository.validar2(usuario)
                         if (autenticado2) {
+
+                            val componentes = ComponentesRepository(jdbcTemplate)
+                            val looca = Looca()
+                            val id = looca.processador.id
+
+                            if (!componentes.validaMaquina4(id)) {
+                                maquina = componentes.identificaMaquina(id)
+                                println(maquina)
+                            }
+
                             while (true) {
                                 val escolha3 = JOptionPane.showInputDialog(
                                     """
@@ -557,7 +571,7 @@ fun loginUsuario() {
                                 )
 
                                 when (escolha3) {
-                                    "1" -> monitorarUser()
+                                    "1" -> monitorarUser(maquina)
                                     else -> return
                                 }
                             }
@@ -674,12 +688,9 @@ fun monitorar(maquina: Maquina, empresa: Empresa) {
     }
 }
 
-fun monitorarUser() {
+fun monitorarUser(maquina: Maquina) {
 
     val jdbcTemplate = Conexao().getJdbcTemplate()
-    val looca = Looca()
-    val maquina = Maquina()
-    maquina.serialNumber = looca.processador.id
     val componentes = ComponentesRepository(jdbcTemplate)
 
     if (componentes.validaMaquina(maquina)) {

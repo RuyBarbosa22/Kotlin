@@ -22,7 +22,6 @@ import javax.swing.JOptionPane.showInputDialog
 //import javax.swing.JOptionPane.showMessageDialog
 //import kotlin.concurrent.schedule
 
-@Suppress("UNREACHABLE_CODE")
 open class Main {
     companion object {
 
@@ -36,7 +35,7 @@ open class Main {
                         1 - Cadastrar empresa
                         2 - Login empresarial
                         3 - Login usuário
-                        3 - Sair
+                        4 - Sair
                     """.trimIndent()
                 )
 
