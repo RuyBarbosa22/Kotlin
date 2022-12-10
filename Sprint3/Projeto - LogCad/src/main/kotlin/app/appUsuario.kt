@@ -375,12 +375,12 @@ fun cadastroExpediente(empresa: Empresa) {
             hora1 = JOptionPane.showInputDialog(
                 """
                 Hora de entrada:
-            """.trimIndent()
+            """.trimIndent().toInt()
             )
 
             if (StringUtils.isNumeric(hora1)) {
                 break
-            } else if (hora1.length > 2 || hora1.isEmpty()) {
+            } else if (hora1.length > 2 || hora1.isEmpty() || hora1 >24.toString() || hora1 < 0.toString()) {
                 JOptionPane.showMessageDialog(null, "Valor inválido")
             } else {
                 JOptionPane.showMessageDialog(null, "Apenas a hora! (número)")
