@@ -1,9 +1,9 @@
 package repositorio
 
-import app.dominio.componentes.CPU
-import app.dominio.componentes.Disco
-import app.dominio.componentes.Maquina
-import app.dominio.componentes.RAM
+import dominio.componentes.CPU
+import dominio.componentes.Disco
+import dominio.componentes.Maquina
+import dominio.componentes.RAM
 import org.springframework.jdbc.core.JdbcTemplate
 
 class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {

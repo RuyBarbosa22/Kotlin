@@ -1,4 +1,4 @@
-package app.dominio.componentes
+package dominio.componentes
 
 data class Maquina (
     var id: Int,

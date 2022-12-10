@@ -1,14 +1,14 @@
 package app
 
-import app.dominio.componentes.CPU
-import app.dominio.componentes.Disco
+import dominio.componentes.CPU
+import dominio.componentes.Disco
 import com.github.britooo.looca.api.core.Looca
 import com.lordcodes.turtle.shellRun
 import com.microsoft.sqlserver.jdbc.StringUtils
 import config.Conexao
 import dominio.Usuario
-import app.dominio.componentes.Maquina
-import app.dominio.componentes.RAM
+import dominio.componentes.Maquina
+import dominio.componentes.RAM
 import repositorio.ComponentesRepository
 import repository.UserRepository
 import java.time.LocalDate

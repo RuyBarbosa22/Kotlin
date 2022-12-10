@@ -1,4 +1,4 @@
-package repositorio
+package repository
 
 import dominio.Usuario
 import org.springframework.jdbc.core.BeanPropertyRowMapper

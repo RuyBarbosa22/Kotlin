@@ -1,6 +1,4 @@
-package app.dominio.componentes
-
-import java.time.LocalDateTime
+package dominio.componentes
 
 data class Disco (
     var totalDisco: Double,

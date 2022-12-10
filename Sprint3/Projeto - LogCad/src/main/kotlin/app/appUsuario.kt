@@ -8,9 +8,9 @@ import dominio.componentes.CPU
 import dominio.componentes.Disco
 import dominio.componentes.Maquina
 import dominio.componentes.RAM
-import repositorio.ComponentesRepository
-import repositorio.EmpresaRepository
-import repositorio.UsuarioRepository
+import repository.ComponentesRepository
+import repository.EmpresaRepository
+import repository.UsuarioRepository
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -333,7 +333,7 @@ fun loginEmpresa() {
                         "1" -> monitorar(maquina, empresa)
                         "2" -> cadastroUsuario(empresa)
                         "3" -> cadastroMaquina(empresa)
-                        "4" -> cadastroExpediente()
+                        "4" -> cadastroExpediente(empresa)
                         else -> return
                     }
                 }
@@ -351,9 +351,11 @@ fun loginEmpresa() {
     }
 }
 
-fun cadastroExpediente() {
+fun cadastroExpediente(empresa: Empresa) {
 
-//    val expediente = Expediente()
+    val jdbcTemplate = Conexao().getJdbcTemplate()
+    val expediente = Expediente()
+    val empresaRepository = EmpresaRepository(jdbcTemplate)
 
     while (true) {
         JOptionPane.showMessageDialog(
@@ -393,6 +395,8 @@ fun cadastroExpediente() {
             )
 
             if (StringUtils.isNumeric(minuto1)) {
+                val entrada = "$hora1:$minuto1:00"
+                expediente.HrEntrada = entrada
                 break
             } else if (minuto1.length > 2 || minuto1.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Valor inválido")
@@ -439,6 +443,8 @@ fun cadastroExpediente() {
             )
 
             if (StringUtils.isNumeric(minuto2)) {
+                val saida = "$hora2:$minuto2:00"
+                expediente.HrSaida = saida
                 break
             } else if (minuto2.length > 2 || minuto2.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Valor inválido")
@@ -463,9 +469,10 @@ fun cadastroExpediente() {
 
             if (resp1 == 1) {
                 JOptionPane.showMessageDialog(null, "Salvando...")
+                empresaRepository.novoExpediente(expediente, empresa)
                 return
             } else if (resp1 == 2) {
-                JOptionPane.showMessageDialog(null, "n salva")
+                return
             } else {
                 JOptionPane.showMessageDialog(null, "Resposta inválida!")
             }
@@ -599,8 +606,7 @@ fun monitorar(maquina: Maquina, empresa: Empresa) {
     val componentes = ComponentesRepository(jdbcTemplate)
     val looca = Looca()
 
-    val idMachine: String
-    idMachine = looca.processador.id
+    val idMachine: String = looca.processador.id
     println(idMachine)
     println("Dentro de monitorar")
 

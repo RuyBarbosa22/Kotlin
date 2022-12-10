@@ -1,6 +1,7 @@
-package repositorio
+package repository
 
 import dominio.Empresa
+import dominio.Expediente
 import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 
@@ -50,6 +51,14 @@ class EmpresaRepository(val jdbcTemplate: JdbcTemplate) {
             BeanPropertyRowMapper(Empresa::class.java), emailLog
         )
         return valida
+    }
+    fun novoExpediente(expediente: Expediente, empresa: Empresa){
+        jdbcTemplate.update(
+            """
+            insert into expediente (HrEntrada, HrSaida, fk_empresa) values
+            (?,?,?)
+        """, expediente.HrEntrada, expediente.HrSaida, empresa.id
+        )
     }
 }
 

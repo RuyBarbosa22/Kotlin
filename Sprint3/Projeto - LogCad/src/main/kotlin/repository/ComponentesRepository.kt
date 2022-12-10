@@ -1,7 +1,6 @@
-package repositorio
+package repository
 
 import dominio.Empresa
-import dominio.Usuario
 import dominio.componentes.CPU
 import dominio.componentes.Disco
 import dominio.componentes.Maquina
@@ -91,7 +90,7 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
             "select * from [dbo].[computador_kotlin] where [dbo].[computador_kotlin].serialNumber = ?",
             BeanPropertyRowMapper(Maquina::class.java), idMachine
         )
-        println(identificaMaquina)
+
         return identificaMaquina
     }
     fun validaEmpresa2 (emailLog: String): Empresa {

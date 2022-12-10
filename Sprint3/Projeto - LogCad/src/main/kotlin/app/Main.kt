@@ -12,9 +12,9 @@ import cadastroEmpresa
 //import dominio.componentes.RAM
 import loginEmpresa
 import loginUsuario
-//import repositorio.ComponentesRepository
-//import repositorio.EmpresaRepository
-//import repositorio.UsuarioRepository
+//import repository.ComponentesRepository
+//import repository.EmpresaRepository
+//import repository.UsuarioRepository
 //import java.time.LocalDateTime
 //import java.time.format.DateTimeFormatter
 import java.util.*
