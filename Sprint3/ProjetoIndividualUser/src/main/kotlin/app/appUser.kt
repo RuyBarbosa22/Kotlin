@@ -41,7 +41,13 @@ fun verExpediente(empresa: Empresa, usuario: Usuario) {
              A máquina será encerrada em poucos segundos
             """.trimIndent()
         )
-        desligaMaquina(empresa, usuario)
+
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+//                shellRun("shutdown", listOf<String>("/s", "/t", "0"), null)
+                JOptionPane.showMessageDialog(null, "Desligou")
+            }
+        }, 5000)
 
     } else {
         val expediente = userRepository.validaFkEmpresa2(empresa)
@@ -57,37 +63,89 @@ fun verExpediente(empresa: Empresa, usuario: Usuario) {
     }
 }
 
-fun desligaMaquina(empresa: Empresa, usuario: Usuario) {
+fun desligaMaquina(empresa: Empresa, usuario: Usuario): Boolean {
 
     val jdbcTemplate = Conexao().getJdbcTemplate()
     val userRepository = UserRepository(jdbcTemplate)
     val componentes = ComponentesRepository(jdbcTemplate)
     val looca = Looca()
-    val expediente = userRepository.validaFkEmpresa2(empresa) // criando objeto que recebe o valor dentro da tabela expediente
 
-    // variaveis de formatação de horario atual
-    val formatoAgora = DateTimeFormatter.ofPattern("HH:mm:ss")
-    val agora = LocalDateTime.now().format(formatoAgora)
+    if (userRepository.validaFkEmpresa1(empresa)) {
 
-    if (agora < expediente.HrEntrada || agora > expediente.HrSaida || userRepository.validaFkEmpresa1(empresa)) {
-        // Vamos identificar o usuario, empresa e máquina para inserir o alerta
+        showMessageDialog(
+            null, """
+             Seu expediente não está cadastrado!
+          Seu administrador deve ser contatado para um
+                   horário ser registrado.
+            """.trimIndent()
+        )
+
+        showMessageDialog(
+            null, """
+             A máquina será encerrada em poucos segundos
+                       e um alerta será gerado.
+            """.trimIndent()
+        )
 
         //maquina
         val idMachine = looca.processador.id
-        val maquina = componentes.identificaMaquina(idMachine)
+        val maquina: Maquina = componentes.identificaMaquina(idMachine)
 
-        println("Gerando alerta")
         userRepository.alerta(maquina, empresa, usuario)
 
-        // dando delay na execução do shutdown (desligamento)
         Timer().schedule(object : TimerTask() {
             override fun run() {
 //                shellRun("shutdown", listOf<String>("/s", "/t", "0"), null)
                 JOptionPane.showMessageDialog(null, "Desligou")
             }
         }, 5000)
-    }
 
+        return true
+
+    } else {
+
+        val expediente = userRepository.validaFkEmpresa2(empresa) // criando objeto que recebe o valor dentro da tabela expediente
+
+        // variaveis de formatação de horario atual
+        val formatoAgora = DateTimeFormatter.ofPattern("HH:mm:ss")
+        val agora = LocalDateTime.now().format(formatoAgora)
+
+        println(agora)
+
+        if (agora < expediente.HrEntrada || agora > expediente.HrSaida || userRepository.validaFkEmpresa1(empresa)) {
+            // Vamos identificar o usuario, empresa e máquina para inserir o alerta
+
+            //maquina
+            val idMachine = looca.processador.id
+            val maquina: Maquina = componentes.identificaMaquina(idMachine)
+
+            showMessageDialog(
+                null, """
+             Você está fora do horário de seu expediente
+            """.trimIndent()
+            )
+
+            showMessageDialog(
+                null, """
+             A máquina será encerrada em poucos segundos
+                       e um alerta será gerado.
+            """.trimIndent()
+            )
+
+            userRepository.alerta(maquina, empresa, usuario)
+
+            // dando delay na execução do shutdown (desligamento)
+            Timer().schedule(object : TimerTask() {
+                override fun run() {
+//                shellRun("shutdown", listOf<String>("/s", "/t", "0"), null)
+                    JOptionPane.showMessageDialog(null, "Desligou")
+                }
+            }, 5000)
+            return true
+        } else {
+            return false
+        }
+    }
 }
 
 fun disco(maquina: Maquina) {
@@ -189,6 +247,10 @@ fun monitorarUser(empresa: Empresa, usuario: Usuario) {
         )
         return
     } else {
+
+        if (desligaMaquina(empresa, usuario)) {
+            return
+        }
 
         var resp = JOptionPane.showInputDialog(
             """

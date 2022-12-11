@@ -375,12 +375,12 @@ fun cadastroExpediente(empresa: Empresa) {
             hora1 = JOptionPane.showInputDialog(
                 """
                 Hora de entrada:
-            """.trimIndent().toInt()
+            """.trimIndent()
             )
 
             if (StringUtils.isNumeric(hora1)) {
                 break
-            } else if (hora1.length > 2 || hora1.isEmpty() || hora1 >24.toString() || hora1 < 0.toString()) {
+            } else if (hora1.length > 2 || hora1.isEmpty() || hora1 > 24.toString() || hora1 < 0.toString()) {
                 JOptionPane.showMessageDialog(null, "Valor inválido")
             } else {
                 JOptionPane.showMessageDialog(null, "Apenas a hora! (número)")
@@ -503,14 +503,7 @@ fun cadastroMaquina(empresa: Empresa) {
     println("Cadastro Maquina")
 
     maquina.serialNumber = loocaCPU.id
-    maquina.sistema_operacional = loocaPc.sistemaOperacional
-    maquina.cpu_nucleos_fisicos = loocaCPU.numeroCpusFisicas
-    maquina.cpu_nucleos_logicos = loocaCPU.numeroCpusLogicas
-    maquina.disco_total = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
-    maquina.memoria_total = loocaRam.total.toDouble() / 1024 / 1024 / 1024
-    maquina.fk_empresa = empresa.id
 
-    JOptionPane.showMessageDialog(null, "Aguarde...")
     if (!componentes.validaMaquina2(maquina) || componentes.validaMaquina3(maquina)) {
         JOptionPane.showMessageDialog(
             null, """
@@ -519,6 +512,15 @@ fun cadastroMaquina(empresa: Empresa) {
         )
         return
     } else {
+
+        maquina.sistema_operacional = loocaPc.sistemaOperacional
+        maquina.cpu_nucleos_fisicos = loocaCPU.numeroCpusFisicas
+        maquina.cpu_nucleos_logicos = loocaCPU.numeroCpusLogicas
+        maquina.disco_total = loocaDisco.tamanhoTotal.toDouble() / 1024 / 1024 / 1024
+        maquina.memoria_total = loocaRam.total.toDouble() / 1024 / 1024 / 1024
+        maquina.fk_empresa = empresa.id
+
+        JOptionPane.showMessageDialog(null, "Aguarde...")
         componentes.inserirMaquina(maquina)
         JOptionPane.showMessageDialog(null, "Cadastro realizado!")
     }
@@ -692,6 +694,7 @@ fun monitorar(maquina: Maquina, empresa: Empresa) {
         monitorar(resp3, 0)
     }
 }
+
 fun monitorarUser(empresa: Empresa, usuario: Usuario) {
 
     val jdbcTemplate = Conexao().getJdbcTemplate()
