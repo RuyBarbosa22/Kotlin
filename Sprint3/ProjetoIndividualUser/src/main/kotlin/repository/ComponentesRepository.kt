@@ -4,6 +4,7 @@ import dominio.componentes.CPU
 import dominio.componentes.Disco
 import dominio.componentes.Maquina
 import dominio.componentes.RAM
+import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
 
 class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
@@ -35,27 +36,19 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
         )
     }
 
-    fun inserirMaquina(maquina: Maquina) {
-        jdbcTemplate.update(
-            """
-            insert into dbo.computador_kotlin (serialNumber, sistema_operacional, disco_total, cpu_nucleos_logicos, cpu_nucleos_fisicos, memoria_total, fk_empresa) values
-            (?,?,?,?,?,?,?)
-        """,
-            maquina.serialNumber,
-            maquina.sistema_operacional,
-            maquina.disco_total,
-            maquina.cpu_nucleos_logicos,
-            maquina.cpu_nucleos_fisicos,
-            maquina.memoria_total,
-            maquina.fk_empresa
-        )
-    }
-
     fun validaMaquina(maquina: Maquina): Boolean {
         val validaCod = jdbcTemplate.queryForObject(
             "select count (*) from computador_kotlin where serialNumber = ?",
             Int::class.java, maquina.serialNumber
         )
         return validaCod == 0
+    }
+
+    fun identificaMaquina(idMachine: String): Maquina {
+        val identificaMaquina = jdbcTemplate.queryForObject(
+            "select * from [dbo].[computador_kotlin] where [dbo].[computador_kotlin].serialNumber = ?",
+            BeanPropertyRowMapper(Maquina::class.java), idMachine
+        )
+        return identificaMaquina
     }
 }

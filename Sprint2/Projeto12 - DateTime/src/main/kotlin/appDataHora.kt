@@ -14,7 +14,7 @@ fun main() {
     val data1 = LocalDate.parse(dataQualquer)
 
     println(data1)
-    println("aajsadlafgbljbfvgljasf")
+
     // para usarmos outro formato de data usamos a classe DateTimeFormatter
     var formato = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     var data2 = LocalDate.parse("04/01/2000", formato)

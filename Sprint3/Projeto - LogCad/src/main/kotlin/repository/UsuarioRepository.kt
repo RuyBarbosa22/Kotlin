@@ -1,5 +1,6 @@
 package repository
 
+import dominio.Empresa
 import dominio.Usuario
 import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
@@ -43,5 +44,21 @@ class UsuarioRepository(private val jdbcTemplate: JdbcTemplate) {
             "select * from dbo.Usuario where email = ? and senha = ?",  // "?" será substituido pelo id
             BeanPropertyRowMapper(Usuario::class.java), email, senha
         ) != null
+    }
+
+    fun validaEmpresa(usuario: Usuario): Empresa {
+        val dadosEmp = jdbcTemplate.queryForObject(
+            "select * from empresa where codEmpresa = ?",
+            BeanPropertyRowMapper(Empresa::class.java), usuario.codEmpresa
+        )
+        return dadosEmp
+    }
+
+    fun identificaUser(email: String, senha: String): Usuario {
+        val usuario = jdbcTemplate.queryForObject(
+            "select * from Usuario where email = ? and senha = ?",
+            BeanPropertyRowMapper(Usuario::class.java), email, senha
+        )
+        return usuario
     }
 }

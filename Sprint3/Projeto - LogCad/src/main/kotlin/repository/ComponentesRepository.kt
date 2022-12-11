@@ -93,12 +93,5 @@ class ComponentesRepository(val jdbcTemplate: JdbcTemplate) {
 
         return identificaMaquina
     }
-    fun validaEmpresa2 (emailLog: String): Empresa {
-        val valida = jdbcTemplate.queryForObject(
-            "select * from empresa where email = ?",
-            BeanPropertyRowMapper(Empresa::class.java), emailLog
-        )
-        return valida
-    }
 
 }

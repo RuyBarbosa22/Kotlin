@@ -528,10 +528,9 @@ fun cadastroMaquina(empresa: Empresa) {
 fun loginUsuario() {
 
     val jdbcTemplate = Conexao().getJdbcTemplate()
-    val usuario = Usuario()
+    var usuario = Usuario()
     val usuarioRepository = UsuarioRepository(jdbcTemplate)
     var emailLog: String
-    var maquina = Maquina()
 
     while (true) {
         while (true) {
@@ -551,26 +550,25 @@ fun loginUsuario() {
                 JOptionPane.showMessageDialog(null, "Credenciais inválidas!")
                 return
             } else {
-                val autenticado: Boolean = usuarioRepository.validacaoLogin2(emailLog, senha)
+                val autenticado: Boolean =
+                    usuarioRepository.validacaoLogin2(emailLog, senha) // validando se existe esse usuário
                 if (autenticado) {
                     usuario.codEmpresa = JOptionPane.showInputDialog("Código da empresa:")
-                    if (!usuarioRepository.validar1(usuario)) {
+                    if (!usuarioRepository.validar1(usuario)) { // validando se usuário com esse codEmpresa
                         val autenticado2 = usuarioRepository.validar2(usuario)
                         if (autenticado2) {
 
-                            val componentes = ComponentesRepository(jdbcTemplate)
-                            val looca = Looca()
-                            val id = looca.processador.id
+                            //Pegando dados da empresa
+                            val empresa = usuarioRepository.validaEmpresa(usuario)
 
-                            if (!componentes.validaMaquina4(id)) {
-                                maquina = componentes.identificaMaquina(id)
-                                println(maquina)
-                            }
+                            // pegando dados do usuario e guardando no objeto Usuario
+                            usuario = usuarioRepository.identificaUser(emailLog, senha)
+
 
                             while (true) {
                                 val escolha3 = JOptionPane.showInputDialog(
                                     """
-                                    Bem vindo de volta!
+                                    Bem vindo de volta ${usuario.nome}!
                                     Oque deseja fazer?
                                     1 - Monitorar
                                     2 - sair
@@ -578,7 +576,7 @@ fun loginUsuario() {
                                 )
 
                                 when (escolha3) {
-                                    "1" -> monitorarUser(maquina)
+                                    "1" -> monitorarUser(empresa, usuario)
                                     else -> return
                                 }
                             }
@@ -592,6 +590,7 @@ fun loginUsuario() {
                                 Credenciais inválidas!
                             """.trimIndent()
                         )
+                        return
                     }
 
                 }
@@ -693,17 +692,19 @@ fun monitorar(maquina: Maquina, empresa: Empresa) {
         monitorar(resp3, 0)
     }
 }
-
-fun monitorarUser(maquina: Maquina) {
+fun monitorarUser(empresa: Empresa, usuario: Usuario) {
 
     val jdbcTemplate = Conexao().getJdbcTemplate()
+    val looca = Looca()
+    val maquina = Maquina()
+    maquina.serialNumber = looca.processador.id
     val componentes = ComponentesRepository(jdbcTemplate)
 
     if (componentes.validaMaquina(maquina)) {
         JOptionPane.showMessageDialog(
             null, """
-                        Seu computador não esta cadastrado!
-                    Peça para que um administrador da sua empresa 
+                   Seu computador não esta cadastrado ${usuario.nome}!
+                    Peça para que um administrador da ${empresa.nome}
                                cadastre sua máquina.
                     """.trimIndent()
         )
