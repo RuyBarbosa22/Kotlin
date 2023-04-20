@@ -1,4 +1,4 @@
-package sptech.projetojpa01
+package sptech.projetojpa03
 
 import java.time.LocalDate
 import javax.persistence.Entity
