@@ -1,0 +1,5 @@
+1. Sim, optei por utilizar uma classe abstrata, o que possibilita fornecer uma implementação padrão ao mesmo tempo que obriga as subclasses a implementarem o método.
+
+2. Seria mais apropriado utilizar uma interface, uma vez que não é necessário que todos os herdeiros implementem os mesmos métodos e propriedades, apenas as classes Professor e Coordenador precisam fazê-lo.
+
+3. É suficiente utilizar apenas uma List na classe ControleBonus para armazenar todos os objetos que recebem bônus. Essa abordagem simplifica a estrutura e permite uma manipulação eficiente de todos os objetos que têm direito a bônus.
