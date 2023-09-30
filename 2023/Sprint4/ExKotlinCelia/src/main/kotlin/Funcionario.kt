@@ -7,6 +7,4 @@ abstract class Funcionario (
     override fun toString(): String {
         return "Funcionario(cpf='$cpf', nome='$nome')"
     }
-
-
 }
